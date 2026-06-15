@@ -5,7 +5,7 @@ import os
 # 1. إعدادات الصفحة الأساسية بالمظهر العريض الفخم
 st.set_page_config(page_title="LawMind | AI Legal Intelligence", page_icon="⚖️", layout="wide")
 
-# 2. تصميم الـ Frontend الاحترافي المطور مع إخفاء القائمة الجانبية وأدوات المنصة
+# 2. تصميم الـ Frontend الاحترافي المطور مع إخفاء القائمة الجانبية وأدوات المنصة والشعارات السفلية
 st.markdown("""
     <style>
     /* 🔴 إخفاء القائمة الجانبية بالكامل (System Status) */
@@ -22,9 +22,21 @@ st.markdown("""
         display: none !important;
     }
     
-    /* تصحيح الهوامش العلوية بعد حذف الهيدر ليتمركز الموقع بشكل فخم */
+    /* 🔴 إخفاء شريط Hosted with Streamlit السفلي المزعج والزر العائم على الهواتف */
+    .viewerBadge_container__1QSob, [data-testid="stViewerBadge"], .styles_viewerBadge__NiTeF {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
+    /* إخفاء أي أزرار عائمة أو عناصر تابعة لـ Streamlit في أسفل الشاشة */
+    div[class^="viewerBadge"] {
+        display: none !important;
+    }
+    
+    /* تصحيح الهوامش العلوية والسفلية ليتمركز الموقع بشكل فخم */
     .block-container {
         padding-top: 2rem !important;
+        padding-bottom: 3rem !important;
         max-width: 1000px !important;
         margin: 0 auto !important;
     }
@@ -198,7 +210,7 @@ st.markdown("""
         border: 1px solid rgba(129, 140, 248, 0.2);
         max-width: 80%;
     }
-    .footer {
+    .footer-custom {
         text-align: center;
         margin-top: 50px;
         color: #64748b;
@@ -333,4 +345,4 @@ elif st.session_state.page == "chat":
                 except Exception as e:
                     st.error(f"System Error: {str(e)}")
 
-st.markdown('<p class="footer">LawMind | AI Legal Intelligence • Powered by Moroccan Innovation 🇲🇦 • © 2026</p>', unsafe_allow_html=True)
+st.markdown('<p class="footer-custom">LawMind | AI Legal Intelligence • Powered by Moroccan Innovation 🇲🇦 • © 2026</p>', unsafe_allow_html=True)
