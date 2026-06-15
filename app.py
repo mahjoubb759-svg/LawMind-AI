@@ -1,6 +1,6 @@
 import streamlit as st
-import requests
-import json
+from google import genai
+from google.genai import types
 import os
 
 # 1. إعدادات الصفحة الأساسية بالمظهر العريض الفخم
@@ -182,7 +182,6 @@ st.markdown("""
         box-shadow: 0 0 25px rgba(56, 189, 248, 0.5) !important;
     }
     
-    /* تنسيق فقاعات المحادثة لتبدو واضحة وبحجم ممتد تلقائياً */
     .chat-bubble-user {
         background-color: #1e293b;
         padding: 15px 20px;
@@ -225,11 +224,12 @@ if "lang" not in st.session_state: st.session_state.lang = "ar"
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 جلب المفتاح بأمان تام من الخزنة السحابية (Streamlit Secrets)
+# 🔐 [تطبيق حرفي للدليل الرسمي]: تهيئة العميل الجديد الموحد لعام 2026 وقراءة الـ Secrets
+client = None
 if "gemini" in st.secrets:
-    GEMINI_API_KEY = st.secrets["gemini"]["api_key"].strip()
-else:
-    GEMINI_API_KEY = ""
+    api_key_val = st.secrets["gemini"]["api_key"].strip()
+    if api_key_val:
+        client = genai.Client(api_key=api_key_val)
 
 locales = {
     "en": {
@@ -311,8 +311,8 @@ elif st.session_state.page == "chat":
     if search_button and user_query:
         if legal_context is None:
             st.error(f"❌ Document Error: Please verify that 'law.txt' file exists.")
-        elif not GEMINI_API_KEY:
-            st.error("⚠️ Configuration Error: Gemini API Key is missing in server Secrets.")
+        elif client is None:
+            st.error("⚠️ Configuration Error: Gemini API Key Client could not be initialized from Secrets.")
         else:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
@@ -323,25 +323,20 @@ elif st.session_state.page == "chat":
                         f"'This specific case is not available in our verified database for {st.session_state.country}.'"
                     )
                     
-                    full_prompt = f"SYSTEM INSTRUCTIONS:\n{system_prompt}\n\nVERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"
+                    user_message = f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"
                     
-                    # الالتفاف البرمجي الذكي المباشر الموثوق بنسبة 100%
-                    api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={GEMINI_API_KEY}"
-                    headers = {"Content-Type": "application/json"}
-                    payload = {"contents": [{"parts": [{"text": full_prompt}]}]}
+                    # 🛠️ [التطبيق الحرفي للـ Documentation]: الاستدعاء الرسمي عبر الهيكلية المحدثة
+                    response = client.models.generate_content(
+                        model='gemini-1.5-flash',
+                        contents=user_message,
+                        config=types.GenerateContentConfig(
+                            system_instruction=system_prompt,
+                            temperature=0.0
+                        )
+                    )
                     
-                    response = requests.post(api_url, headers=headers, json=payload)
-                    response_json = response.json()
-                    
-                    if 'candidates' in response_json and response_json['candidates']:
-                        output_text = response_json['candidates'][0]['content']['parts'][0]['text']
-                        st.session_state.chat_history.append({"role": "assistant", "content": output_text})
-                        st.rerun()
-                    elif 'error' in response_json:
-                        st.error(f"🛑 Google API Error ({response_json['error'].get('code')}): {response_json['error'].get('message')}")
-                    else:
-                        st.error(f"⚠️ رد غير متوقع من السيرفر. تفاصيل الرد: {json.dumps(response_json)}")
-                        
+                    st.session_state.chat_history.append({"role": "assistant", "content": response.text})
+                    st.rerun()
                 except Exception as e:
                     st.error(f"System Error: {str(e)}")
 
