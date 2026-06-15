@@ -224,11 +224,9 @@ GROQ_API_KEY = ""
 if "groq" in st.secrets:
     GROQ_API_KEY = st.secrets["groq"]["api_key"].strip()
 
-# ضبط اللغات وإصلاح سطر الرؤية المكرر
 locales = {
     "en": {
-        "vision": "هي أول منصة مغربية وعالمية تسخر الذكاء الاصطناعي لخدمة البشرية في مجال القانون.", # كود موحد يدعم الواجهة العربية
-        "vision_native": "The first Moroccan and global platform that harnesses artificial intelligence to serve humanity in the field of law.",
+        "vision_native": "is the first Moroccan and global platform that harnesses artificial intelligence to serve humanity in the field of law.",
         "badge": "100% Moroccan Product 🇲🇦",
         "credits": "💡 Developed by: <span class='team-names'>Mr. Elmahjoub Boumagout</span> & <span class='team-names'>Mrs. ASMA AHLBIHI</span>",
         "select_lang": "Select Language", "select_country": "Select Country", "btn_enter": "Launch Intelligence", "placeholder": "Ask your strict legal question here...", "search_btn": "Consult System"
@@ -240,7 +238,7 @@ locales = {
         "select_lang": "حدد اللغة", "select_country": "حدد الدولة", "btn_enter": "إطلاق الذكاء القانوني", "placeholder": "اطرح سؤالك القانوني الصارم هنا...", "search_btn": "استشارة النظام"
     },
     "fr": {
-        "vision_native": "La première plateforme marocaine et mondiale qui met l'intelligence artificielle au service de l'humanité dans le domaine du droit.",
+        "vision_native": "est la première plateforme marocaine et mondiale qui met l'intelligence artificielle au service de l'humanité dans le domaine du droit.",
         "badge": "Produit 100% Marocain 🇲🇦",
         "credits": "💡 Développé par: <span class='team-names'>M. Elmahjoub Boumagout</span> & <span class='team-names'>Mme ASMA AHLBIHI</span>",
         "select_lang": "Choisir la Langue", "select_country": "Choisir le Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système"
@@ -253,8 +251,8 @@ if st.session_state.page == "landing":
     st.markdown('<p class="main-title">LawMind</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">AI Legal Intelligence</p>', unsafe_allow_html=True)
     
-    # بناء سطر الرؤية بدون تكرار الكلمة
-    st.markdown(f'<div class="vision-container"><p class="vision-text"><b>LawMind</b> {current_text["vision_native"]}</p></div>', unsafe_allow_html=True)
+    # 🛠️ تم إزالة LawMind المكررة بناءً على طلبك
+    st.markdown(f'<div class="vision-container"><p class="vision-text"> {current_text["vision_native"]}</p></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="badge-container"><span class="moroccan-badge">{current_text["badge"]}</span></div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
@@ -325,7 +323,7 @@ elif st.session_state.page == "chat":
                     }
                     
                     payload = {
-                        "model": "llama-3.3-70b-versatile",  # 🚀 التحديث الرسمي للموديل لعام 2026
+                        "model": "llama3-8b-8192",  # ⚡ الانتقال للموديل الأسرع والأكثر استقراراً للحسابات المجانية
                         "messages": [
                             {"role": "system", "content": system_prompt},
                             {"role": "user", "content": f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"}
