@@ -221,7 +221,7 @@ st.markdown("""
 
 # 3. إدارة جلسات الذاكرة المؤقتة للتنقل بمرونة بين الواجهات
 if "page" not in st.session_state: st.session_state.page = "landing"
-if "lang" not in st.session_state: st.session_state.lang = "ar"  # اللغة الافتراضية العربية للهاكاثون
+if "lang" not in st.session_state: st.session_state.lang = "ar"  # اللغة الافتراضية للهاكاثون
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
@@ -332,9 +332,9 @@ elif st.session_state.page == "chat":
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
                 try:
-                    # إعداد نموذج جيميناي السريع والذكي والمجاني
+                    # استخدام مسار الموديل المباشر والصحيح لتفادي خطأ الـ 404 نهائياً
                     model = genai.GenerativeModel(
-                        model_name="gemini-1.5-flash",
+                        model_name="models/gemini-1.5-flash",
                         system_instruction=f"You are a hyper-strict Legal AI Core named 'LawMind | AI Legal Intelligence' specialized in {st.session_state.country} laws. You must answer ONLY and STRICTLY from the provided legal context text below. If the case is not available, reply exactly with: 'This specific case is not available in our verified database for {st.session_state.country}.'"
                     )
                     
