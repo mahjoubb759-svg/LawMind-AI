@@ -3,7 +3,7 @@ import requests
 import json
 import os
 
-# 1. إعدادات الصفحة الأساسية بالمظهر العريض الفخم
+# 1. إعدادات الصفحة الأساسية بالمظهر العريض الاحترافي
 st.set_page_config(page_title="LawMind | AI Legal Intelligence", page_icon="⚖️", layout="wide")
 
 # 2. تصميم الـ Frontend الاحترافي المطور والمقاوم لتداخل النصوص
@@ -213,16 +213,18 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# تهيئة متغيرات الجلسة (Session State)
 if "page" not in st.session_state: st.session_state.page = "landing"
 if "lang" not in st.session_state: st.session_state.lang = "ar"
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 قراءة الـ Secrets
-GROQ_API_KEY = ""
-if "groq" in st.secrets:
-    GROQ_API_KEY = st.secrets["groq"]["api_key"].strip()
+# 🔐 قراءة مفتاح OpenAI الآمن من السيكرتس
+OPENAI_API_KEY = ""
+if "openai" in st.secrets:
+    OPENAI_API_KEY = st.secrets["openai"]["api_key"].strip()
 
+# اللغات والنصوص المستخدمة في الواجهة
 locales = {
     "en": {
         "vision_native": "is the first Moroccan and global platform that harnesses artificial intelligence to serve humanity in the field of law.",
@@ -245,6 +247,7 @@ locales = {
 }
 current_text = locales[st.session_state.lang]
 
+# --- صفحة الترحيب والتهيئة (Landing Page) ---
 if st.session_state.page == "landing":
     st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
     st.markdown('<p class="main-title">LawMind</p>', unsafe_allow_html=True)
@@ -275,6 +278,7 @@ if st.session_state.page == "landing":
             
     st.markdown(f'<div class="credits-container"><div class="team-credits">{current_text["credits"]}</div></div>', unsafe_allow_html=True)
 
+# --- صفحة الشات الذكي (Chat Page) ---
 elif st.session_state.page == "chat":
     st.markdown('<p class="legal-logo" style="font-size: 3rem;">⚖️</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="main-title" style="font-size: 2.2rem;">LawMind | {st.session_state.country} Bureau</p>', unsafe_allow_html=True)
@@ -288,6 +292,7 @@ elif st.session_state.page == "chat":
 
     legal_context = load_specific_country_law()
 
+    # عرض تاريخ المحادثة
     for message in st.session_state.chat_history:
         if message["role"] == "user":
             st.markdown(f'<div class="chat-bubble-user"><b>👤 المستشار:</b><br>{message["content"]}</div>', unsafe_allow_html=True)
@@ -302,29 +307,34 @@ elif st.session_state.page == "chat":
     if search_button and user_query:
         if legal_context is None:
             st.error(f"❌ Document Error: Please verify that 'law.txt' file exists.")
-        elif not GROQ_API_KEY:
-            st.error("⚠️ Configuration Error: Groq API Key is missing.")
+        elif not OPENAI_API_KEY:
+            st.error("⚠️ Configuration Error: OpenAI API Key is missing in Secrets.")
         else:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
                 try:
+                    # نظام توجيه صارم لإجبار النموذج على الرد بنفس لغة سؤال المستخدم
                     system_prompt = (
-                        f"You are a hyper-strict Legal AI Core specialized in {st.session_state.country} laws. "
-                        f"You must answer ONLY and STRICTLY from the provided legal context text database below. If the case is not available, reply exactly with: "
-                        f"'This specific case is not available in our verified database for {st.session_state.country}.'"
+                        f"You are a strict legal expert AI engine specialized in {st.session_state.country} laws. "
+                        f"CRITICAL: You must answer the user's question in the EXACT SAME LANGUAGE they used to ask it. "
+                        f"If the user asks in Arabic, your answer must be in professional legal Arabic. "
+                        f"You must retrieve the answer ONLY and STRICTLY from the provided legal context text database below. "
+                        f"If the specific case or query is not found in the database, reply exactly with: "
+                        f"'هذه الحالة المحددة غير متوفرة حالياً في قاعدة بياناتنا المعتمدة لـ {st.session_state.country}.' (or the equivalent in the user's language)."
                     )
                     
-                    api_url = "https://api.groq.com/openai/v1/chat/completions"
+                    # طلب الـ API المباشر لـ OpenAI المدفوع
+                    api_url = "https://api.openai.com/v1/chat/completions"
                     headers = {
-                        "Authorization": f"Bearer {GROQ_API_KEY}",
+                        "Authorization": f"Bearer {OPENAI_API_KEY}",
                         "Content-Type": "application/json"
                     }
                     
                     payload = {
-                        "model": "llama-3.1-8b-instant",  # ⚡ الانتقال للموديل المستقر المعتمد حالياً لمنع أخطاء التحديث
+                        "model": "gpt-4o-mini",
                         "messages": [
                             {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"}
+                            {"role": "user", "content": f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:35000]}\n\nCITIZEN QUESTION:\n{user_query}"}
                         ],
                         "temperature": 0.0
                     }
@@ -337,7 +347,7 @@ elif st.session_state.page == "chat":
                         st.session_state.chat_history.append({"role": "assistant", "content": output_text})
                         st.rerun()
                     elif 'error' in response_json:
-                        st.error(f"🛑 Groq API Error: {response_json['error'].get('message')}")
+                        st.error(f"🛑 OpenAI API Error: {response_json['error'].get('message')}")
                     else:
                         st.error(f"⚠️ Unexpected Server Response.")
                         
