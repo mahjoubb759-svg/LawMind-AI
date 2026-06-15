@@ -16,7 +16,7 @@ st.markdown("""
         display: none !important;
     }
     
-    /* 🔴 إخفاء شريط التعديل العلوي وزر Manage App السفلي للجمهور */
+    /* 🔴 إخفاء شريط Tعديل العلوي وزر Manage App السفلي للجمهور */
     #MainMenu, footer, header, [data-testid="stDecoration"] {
         visibility: hidden !important;
         display: none !important;
@@ -249,7 +249,7 @@ locales = {
     "fr": {
         "vision": "La plateforme <b>LawMind</b> est la première plateforme marocaine et mondiale qui met l'intelligence artificielle au service de l'humanité dans le domaine du droit.",
         "badge": "Produit 100% Marocain 🇲🇦",
-        "credits": "💡 Développە par: <span class='team-names'>M. Elmahjoub Boumagout</span> & <span class='team-names'>Mme ASMA AHLBIHI</span>",
+        "credits": "💡 Développé par: <span class='team-names'>M. Elmahjoub Boumagout</span> & <span class='team-names'>Mme ASMA AHLBIHI</span>",
         "select_lang": "Choisir la Langue", "select_country": "Choisir le Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système", "status_sidebar": "État du Système"
     }
 }
@@ -332,28 +332,32 @@ elif st.session_state.page == "chat":
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
                 try:
-                    # التهيئة الصحيحة للنموذج الحديث والمتوافق مع التحديث الأخير للمكتبة
-                    system_instruction = (
+                    # صياغة الاستدعاء التقليدي الصافي المتوافق تماماً مع النسخ القديمة والحديثة للمكتبة دون مسارات معقدة
+                    system_prompt = (
                         f"You are a hyper-strict Legal AI Core named 'LawMind | AI Legal Intelligence' specialized in {st.session_state.country} laws.\n"
                         f"You must answer ONLY and STRICTLY from the provided legal context text below. If the case is not available, reply exactly with: "
                         f"'This specific case is not available in our verified database for {st.session_state.country}.'"
                     )
                     
-                    model = genai.GenerativeModel(
-                        model_name="gemini-1.5-flash",
-                        system_instruction=system_instruction
-                    )
+                    user_message = f"SYSTEM INSTRUCTIONS:\n{system_prompt}\n\nVERIFIED LEGAL DATABASE:\n{legal_context[:30000]}\n\nCITIZEN QUESTION:\n{user_query}"
                     
-                    user_message = f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:40000]}\n\nCITIZEN QUESTION:\n{user_query}"
-                    
-                    response = model.generate_content(
-                        user_message,
-                        generation_config={"temperature": 0.0}
+                    # الالتفاف حول مشكلة الإصدار عبر استخدام دالة تشغيل بسيطة ومباشرة
+                    response = genai.generate_text(
+                        model='models/text-bison-001', # هذا الموديل كلاسيكي ومضمون العمل على نظام v1beta القديم المثبت عندك
+                        prompt=user_message,
+                        temperature=0.0
                     )
                     
                     st.session_state.chat_history.append({"role": "assistant", "content": response.text})
                     st.rerun()
                 except Exception as e:
-                    st.error(f"System Error: {str(e)}")
+                    # محاولة ثانية بالنموذج الاحتياطي في حال تعذر الأول
+                    try:
+                        model = genai.GenerativeModel('gemini-pro')
+                        response = model.generate_content(user_message)
+                        st.session_state.chat_history.append({"role": "assistant", "content": response.text})
+                        st.rerun()
+                    except Exception as e2:
+                        st.error(f"System Error: {str(e2)}")
 
 st.markdown('<p class="footer-custom">LawMind | AI Legal Intelligence • Powered by Moroccan Innovation 🇲🇦 • © 2026</p>', unsafe_allow_html=True)
