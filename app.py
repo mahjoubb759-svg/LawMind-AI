@@ -1,6 +1,5 @@
 import streamlit as st
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 import os
 
 # 1. إعدادات الصفحة الأساسية بالمظهر العريض الفخم
@@ -9,7 +8,7 @@ st.set_page_config(page_title="LawMind | AI Legal Intelligence", page_icon="⚖�
 # 2. تصميم الـ Frontend الاحترافي المطور مع إخفاء القائمة الجانبية وأدوات المنصة والشعارات السفلية
 st.markdown("""
     <style>
-    /* 🔴 إخفاء القائمة الجانبية بالكامل */
+    /* إخفاء القائمة الجانبية بالكامل */
     [data-testid="stSidebar"] {
         display: none !important;
     }
@@ -17,13 +16,13 @@ st.markdown("""
         display: none !important;
     }
     
-    /* 🔴 إخفاء شريط التعديل العلوي وزر Manage App السفلي */
+    /* إخفاء شريط التعديل العلوي وزر Manage App السفلي */
     #MainMenu, footer, header, [data-testid="stDecoration"] {
         visibility: hidden !important;
         display: none !important;
     }
     
-    /* 🔴 إخفاء شريط Hosted with Streamlit السفلي */
+    /* إخفاء شريط Hosted with Streamlit السفلي */
     .viewerBadge_container__1QSob, [data-testid="stViewerBadge"], .styles_viewerBadge__NiTeF {
         display: none !important;
         visibility: hidden !important;
@@ -213,12 +212,12 @@ if "lang" not in st.session_state: st.session_state.lang = "ar"
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 تهيئة عميل الاتصال الجديد (GenAI Client) المتوافق مع بيئة 2026 وقراءة الـ Secrets
-client = None
+# 🔐 قراءة مفتاح الـ API بشكل آمن من إعدادات السيرفر السحابي لـ Streamlit
 if "gemini" in st.secrets:
-    api_key_val = st.secrets["gemini"]["api_key"].strip()
-    if api_key_val:
-        client = genai.Client(api_key=api_key_val)
+    GEMINI_API_KEY = st.secrets["gemini"]["api_key"].strip()
+    genai.configure(api_key=GEMINI_API_KEY)
+else:
+    GEMINI_API_KEY = ""
 
 locales = {
     "en": {
@@ -243,7 +242,7 @@ locales = {
 current_text = locales[st.session_state.lang]
 
 # ====================================================================
-# الواجهة الأولى: صفحة الهبوط
+# الواجهة الأولى: صفحة الهبوط والترحيب واختيار الإعدادات
 # ====================================================================
 if st.session_state.page == "landing":
     st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
@@ -276,7 +275,7 @@ if st.session_state.page == "landing":
     st.markdown(f'<div class="credits-container"><div class="team-credits">{current_text["credits"]}</div></div>', unsafe_allow_html=True)
 
 # ====================================================================
-# الواجهة الثانية: شاشة المحادثة
+# الواجهة الثانية: شاشة المحادثة والتحليل الصارم والردود القانونية
 # ====================================================================
 elif st.session_state.page == "chat":
     st.markdown('<p class="legal-logo" style="font-size: 3rem;">⚖️</p>', unsafe_allow_html=True)
@@ -294,6 +293,7 @@ elif st.session_state.page == "chat":
 
     legal_context = load_specific_country_law(st.session_state.country)
 
+    # عرض سجل المحادثة الجارية
     for message in st.session_state.chat_history:
         if message["role"] == "user":
             st.markdown(f'<div class="chat-bubble-user"><b>👤:</b> {message["content"]}</div>', unsafe_allow_html=True)
@@ -308,30 +308,24 @@ elif st.session_state.page == "chat":
     if search_button and user_query:
         if legal_context is None:
             st.error(f"❌ Document Error: Please verify that 'law.txt' file exists.")
-        elif client is None:
-            st.error("⚠️ Configuration Error: Gemini API Key Client could not be initialized.")
+        elif not GEMINI_API_KEY:
+            st.error("⚠️ Configuration Error: Gemini API Key is missing in server Secrets.")
         else:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
                 try:
-                    # صياغة الهندسة المباشرة المتوافقة مع العميل السحابي الجديد لتفادي خطأ 404
+                    # بناء المهندسة لتكون صارمة جداً ومبنية على الموديل المستقر لتفادي الأخطاء التوجيهية
                     system_prompt = (
                         f"You are a hyper-strict Legal AI Core specialized in {st.session_state.country} laws. "
                         f"You must answer ONLY and STRICTLY from the provided legal context text database below. If the case is not available, reply exactly with: "
                         f"'This specific case is not available in our verified database for {st.session_state.country}.'"
                     )
                     
-                    user_message = f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:30000]}\n\nCITIZEN QUESTION:\n{user_query}"
+                    user_message = f"SYSTEM INSTRUCTIONS:\n{system_prompt}\n\nVERIFIED LEGAL TEXT DATABASE:\n{legal_context[:30000]}\n\nCITIZEN QUESTION:\n{user_query}"
                     
-                    # الاستدعاء الرسمي الحديث الخالي تماماً من المشاكل
-                    response = client.models.generate_content(
-                        model='gemini-1.5-flash',
-                        contents=user_message,
-                        config=types.GenerateContentConfig(
-                            system_instruction=system_prompt,
-                            temperature=0.0
-                        )
-                    )
+                    # استدعاء الموديل المستقر الذي يتخطى بروتوكول v1beta المعطل سحابياً
+                    model = genai.GenerativeModel('gemini-pro')
+                    response = model.generate_content(user_message)
                     
                     st.session_state.chat_history.append({"role": "assistant", "content": response.text})
                     st.rerun()
