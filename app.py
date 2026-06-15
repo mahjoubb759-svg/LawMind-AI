@@ -181,22 +181,37 @@ st.markdown("""
         box-shadow: 0 0 25px rgba(56, 189, 248, 0.5) !important;
     }
     
+    /* تنسيق فقاعات المحادثة لتبدو واضحة ومقروءة */
     .chat-bubble-user {
         background-color: #1e293b;
         padding: 15px 20px;
         border-radius: 20px 20px 0px 20px;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
         border: 1px solid rgba(56, 189, 248, 0.2);
-        max-width: 80%;
+        max-width: 85%;
         margin-left: auto;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     .chat-bubble-ai {
         background-color: #0f172a;
-        padding: 20px;
+        padding: 22px;
         border-radius: 20px 20px 20px 0px;
-        margin-bottom: 15px;
-        border: 1px solid rgba(129, 140, 248, 0.2);
-        max-width: 80%;
+        margin-bottom: 20px;
+        border: 1px solid rgba(129, 140, 248, 0.3);
+        max-width: 85%;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #f1f5f9;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .ai-header {
+        color: #818cf8;
+        font-weight: bold;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
     .footer-custom {
         text-align: center;
@@ -293,17 +308,24 @@ elif st.session_state.page == "chat":
 
     legal_context = load_specific_country_law(st.session_state.country)
 
-    # عرض سجل المحادثة الجارية
+    # 🛠️ العرض الاحترافي المتناسق لسجل المحادثة
     for message in st.session_state.chat_history:
         if message["role"] == "user":
-            st.markdown(f'<div class="chat-bubble-user"><b>👤:</b> {message["content"]}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="chat-bubble-user"><b>👤 المستشار:</b><br>{message["content"]}</div>', unsafe_allow_html=True)
         else:
-            st.markdown('<div><b>⚖️ LawMind AI:</b></div>', unsafe_allow_html=True)
-            st.code(message["content"], language="text")
+            st.markdown(f"""
+                <div class="chat-bubble-ai">
+                    <div class="ai-header">⚖️ LawMind AI Intelligence:</div>
+                    {message["content"]}
+                </div>
+            """, unsafe_allow_html=True)
 
     st.write(" ")
-    user_query = st.text_input(label="Legal Consultation Input", placeholder=current_text["placeholder"], key="user_legal_input", label_visibility="collapsed")
-    search_button = st.button(current_text["search_btn"], key="execute_consultation_btn")
+    
+    # نموذج إدخال السؤال القانوني الجديد
+    with st.form(key="legal_form", clear_on_submit=True):
+        user_query = st.text_input(label="Legal Consultation Input", placeholder=current_text["placeholder"], label_visibility="collapsed")
+        search_button = st.form_submit_button(current_text["search_btn"])
 
     if search_button and user_query:
         if legal_context is None:
@@ -311,10 +333,10 @@ elif st.session_state.page == "chat":
         elif not GEMINI_API_KEY:
             st.error("⚠️ Configuration Error: Gemini API Key is missing in server Secrets.")
         else:
+            # إضافة سؤال المستخدم فوراً لقائمة الحفظ وثم الاستدعاء المعالج
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
                 try:
-                    # بناء المهندسة لتكون صارمة جداً ومبنية على الموديل المستقر لتفادي الأخطاء التوجيهية
                     system_prompt = (
                         f"You are a hyper-strict Legal AI Core specialized in {st.session_state.country} laws. "
                         f"You must answer ONLY and STRICTLY from the provided legal context text database below. If the case is not available, reply exactly with: "
@@ -323,10 +345,11 @@ elif st.session_state.page == "chat":
                     
                     user_message = f"SYSTEM INSTRUCTIONS:\n{system_prompt}\n\nVERIFIED LEGAL TEXT DATABASE:\n{legal_context[:30000]}\n\nCITIZEN QUESTION:\n{user_query}"
                     
-                    # استدعاء الموديل المستقر الذي يتخطى بروتوكول v1beta المعطل سحابياً
+                    # الاتصال الآمن بالموديل
                     model = genai.GenerativeModel('gemini-pro')
                     response = model.generate_content(user_message)
                     
+                    # حفظ رد المساعد بصيغة متناسقة لإعادة التوجيه الشاشي
                     st.session_state.chat_history.append({"role": "assistant", "content": response.text})
                     st.rerun()
                 except Exception as e:
