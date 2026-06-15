@@ -212,7 +212,7 @@ if "lang" not in st.session_state: st.session_state.lang = "ar"
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 القراءة الآمنة والمستقرة من الـ Secrets لتفادي حظر الحماية الخاص بـ GitHub
+# 🔐 جلب المفتاح بأمان تام من الـ Secrets لتجنب حظر أنظمة أمان GitHub
 if "gemini" in st.secrets:
     GEMINI_API_KEY = st.secrets["gemini"]["api_key"].strip()
     genai.configure(api_key=GEMINI_API_KEY)
@@ -242,7 +242,7 @@ locales = {
 current_text = locales[st.session_state.lang]
 
 # ====================================================================
-# الواجهة الاولى: صفحة الهبوط
+# الواجهة الأولى: صفحة الهبوط والإعدادات (Landing Page)
 # ====================================================================
 if st.session_state.page == "landing":
     st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
@@ -275,7 +275,7 @@ if st.session_state.page == "landing":
     st.markdown(f'<div class="credits-container"><div class="team-credits">{current_text["credits"]}</div></div>', unsafe_allow_html=True)
 
 # ====================================================================
-# الواجهة الثانية: منصة الشات والمحادثة القانونية
+# الواجهة الثانية: منصة المحادثة والشات القانوني (Chat Interface)
 # ====================================================================
 elif st.session_state.page == "chat":
     st.markdown('<p class="legal-logo" style="font-size: 3rem;">⚖️</p>', unsafe_allow_html=True)
@@ -313,6 +313,7 @@ elif st.session_state.page == "chat":
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
                 try:
+                    # صياغة الهندسة الصارمة
                     system_prompt = (
                         f"You are a hyper-strict Legal AI Core specialized in {st.session_state.country} laws. "
                         f"You must answer ONLY and STRICTLY from the provided legal context text database below. If the case is not available, reply exactly with: "
@@ -321,8 +322,8 @@ elif st.session_state.page == "chat":
                     
                     user_message = f"SYSTEM INSTRUCTIONS:\n{system_prompt}\n\nVERIFIED LEGAL TEXT DATABASE:\n{legal_context[:30000]}\n\nCITIZEN QUESTION:\n{user_query}"
                     
-                    # استدعاء النموذج بالطريقة المباشرة لضمان التوافق التام مع مفتاح الـ Pro الطويل لعام 2026
-                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    # 🛠️ [الحل الجذري]: إجبار الحساب الاحترافي (GCP Pro Key) على الحديث مع الموديل بدون تعارض الإصدارات القديمة
+                    model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
                     response = model.generate_content(user_message)
                     
                     st.session_state.chat_history.append({"role": "assistant", "content": response.text})
