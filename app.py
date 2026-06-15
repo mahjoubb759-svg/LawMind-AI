@@ -223,27 +223,49 @@ OPENAI_API_KEY = ""
 if "openai" in st.secrets:
     OPENAI_API_KEY = st.secrets["openai"]["api_key"].strip()
 
-# سطر الـ Credits ثابت دائماً باللغة الإنجليزية
+# سطر الـ Credits ثابت دائماً باللغة الإنجليزية للمظهر الاحترافي
 fixed_credits = "💡 Developed by: <span class='team-names'>Mr. Elmahjoub Boumagout</span> & <span class='team-names'>Mrs. ASMA AHLBIHI</span>"
 
+# إعداد اللغات الموسعة (إضافة الإسبانية والألمانية)
 locales = {
     "en": {
         "vision_native": "is the first Moroccan and global platform that harnesses artificial intelligence to serve humanity in the field of law.",
         "badge": "100% Moroccan Product 🇲🇦",
-        "select_lang": "Select Language", "select_country": "Select Country", "btn_enter": "Launch Intelligence", "placeholder": "Ask your strict legal question here...", "search_btn": "Consult System"
+        "select_lang": "Select Language", "select_country": "Select Country Office", "btn_enter": "Launch Intelligence", "placeholder": "Ask your strict legal question here...", "search_btn": "Consult System"
     },
     "ar": {
         "vision_native": "هي أول منصة مغربية وعالمية تسخر الذكاء الاصطناعي لخدمة البشرية في مجال القانون.",
         "badge": "منتج مغربي 100% 🇲🇦",
-        "select_lang": "حدد اللغة", "select_country": "حدد الدولة", "btn_enter": "إطلاق الذكاء القانوني", "placeholder": "اطرح سؤالك القانوني الصارم هنا...", "search_btn": "استشارة النظام"
+        "select_lang": "حدد اللغة", "select_country": "حدد مكتب الدولة", "btn_enter": "إطلاق الذكاء القانوني", "placeholder": "اطرح سؤالك القانوني الصارم هنا...", "search_btn": "استشارة النظام"
     },
     "fr": {
         "vision_native": "est la première plateforme marocaine et mondiale qui met l'intelligence artificielle au service de l'humanité dans le domaine du droit.",
         "badge": "Produit 100% Marocain 🇲🇦",
-        "select_lang": "Choisir la Langue", "select_country": "Choisir le Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système"
+        "select_lang": "Choisir la Langue", "select_country": "Choisir le Bureau de Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système"
+    },
+    "es": {
+        "vision_native": "es la primera plataforma marroquí y global que pone la inteligencia artificial al servicio de la humanidad en el campo del derecho.",
+        "badge": "Producto 100% Marroquí 🇲🇦",
+        "select_lang": "Seleccionar Idioma", "select_country": "Seleccionar Oficina de País", "btn_enter": "Iniciar Inteligencia", "placeholder": "Haga su pregunta legal estricta aquí...", "search_btn": "Consultar Sistema"
+    },
+    "de": {
+        "vision_native": "ist die erste marokkanische und globale Plattform, die künstliche Intelligenz im Dienste der Menschheit im Bereich des Rechts einsetzt.",
+        "badge": "100% Marokkanisches Produkt 🇲🇦",
+        "select_lang": "Sprache auswählen", "select_country": "Länderbüro auswählen", "btn_enter": "Intelligenz starten", "placeholder": "Stellen Sie hier Ihre strenge Rechtsfrage...", "search_btn": "System konsultieren"
     }
 }
 current_text = locales[st.session_state.lang]
+
+# قائمة الدول الموسعة
+supported_countries = [
+    "Morocco 🇲🇦", 
+    "France 🇫🇷", 
+    "USA 🇺🇸", 
+    "Saudi Arabia 🇸🇦", 
+    "Egypt 🇪🇬", 
+    "Spain 🇪🇸", 
+    "UAE 🇦🇪"
+]
 
 if st.session_state.page == "landing":
     st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
@@ -256,15 +278,21 @@ if st.session_state.page == "landing":
     col1, col2 = st.columns(2)
     with col1:
         st.markdown(f'<div class="selection-box"><h3>🌐 {current_text["select_lang"]}</h3>', unsafe_allow_html=True)
-        selected_lang_ui = st.selectbox("Language", ["العربية", "English", "Français"], index=["ar", "en", "fr"].index(st.session_state.lang), label_visibility="collapsed")
+        selected_lang_ui = st.selectbox("Language", ["العربية", "English", "Français", "Español", "Deutsch"], index=["ar", "en", "fr", "es", "de"].index(st.session_state.lang), label_visibility="collapsed")
         if selected_lang_ui == "English": st.session_state.lang = "en"
         elif selected_lang_ui == "العربية": st.session_state.lang = "ar"
         elif selected_lang_ui == "Français": st.session_state.lang = "fr"
+        elif selected_lang_ui == "Español": st.session_state.lang = "es"
+        elif selected_lang_ui == "Deutsch": st.session_state.lang = "de"
         st.markdown('</div>', unsafe_allow_html=True)
         
     with col2:
         st.markdown(f'<div class="selection-box"><h3>📍 {current_text["select_country"]}</h3>', unsafe_allow_html=True)
-        selected_country_ui = st.selectbox("Country", ["Morocco 🇲🇦", "France 🇫🇷", "USA 🇺🇸"], index=["Morocco", "France", "USA"].index(st.session_state.country), label_visibility="collapsed")
+        # استخراج اسم الدولة الافتراضية للـ index لئلا يحدث خطأ أثناء التحديث
+        clean_country_names = [c.split()[0] for c in supported_countries]
+        default_country_idx = clean_country_names.index(st.session_state.country) if st.session_state.country in clean_country_names else 0
+        
+        selected_country_ui = st.selectbox("Country", supported_countries, index=default_country_idx, label_visibility="collapsed")
         st.session_state.country = selected_country_ui.split()[0]
         st.markdown('</div>', unsafe_allow_html=True)
         
@@ -307,14 +335,16 @@ elif st.session_state.page == "chat":
             st.error("⚠️ Configuration Error: OpenAI API Key is missing.")
         else:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
-            with st.spinner("Analyzing Legal Database & Core Knowledge..."):
+            with st.spinner("Analyzing Legal Database & Universal Law Knowledge..."):
                 try:
-                    # 🛠️ التعديل الجوهري: تحويل محرك الـ AI إلى مستشار قانوني عالمي صارم يمنع الخروج عن الثيم القانوني لأي دولة
+                    # 🛠️ توجيه الذكاء الاصطناعي للفصل الذكي: يركز على الدولة المختارة إلا إذا حدد المستخدم دولة أخرى في نص سؤاله
                     system_prompt = (
-                        f"You are a strict, hyper-focused Legal Expert AI core specialized in national and international laws, currently advising on {st.session_state.country} laws. "
-                        f"CRITICAL RULE 1 (THEME GATEKEEPER): You must ONLY answer legal and law-related questions. If the user's inquiry is NOT related to law, legislation, crimes, contracts, or judicial systems (e.g., general cooking, programming, gossip, pop culture, sports), you must strictly decline to answer. Politely state that you are an AI Legal Intelligence system and cannot step outside the boundaries of legal consultation. "
-                        f"CRITICAL RULE 2 (GLOBAL SCOPE): While your current focus is set to {st.session_state.country} based on user selection, you possess comprehensive expertise in global jurisdictions. Answer inquiries with high-quality formal legal analysis. "
-                        f"CRITICAL RULE 3 (LANGUAGE MATCHING): You must write your professional response in the EXACT SAME LANGUAGE the user used to ask the question. If they ask in Arabic, reply in formal, eloquent legal Arabic."
+                        f"You are a strict, hyper-focused Legal Expert AI core specialized in international jurisprudence. "
+                        f"Your default focus for this session is set to {st.session_state.country} laws. "
+                        f"CRITICAL RULE 1 (DYNAMIC JURISDICTION): Analyze the user's question. If the user explicitly asks about the laws of another specific country (e.g., they are in the Morocco bureau but ask about France, USA, Egypt, etc.), you MUST override the default country and answer accurately according to the legal system of the country requested in their question. "
+                        f"If they do not specify another country, answer strictly based on {st.session_state.country} laws, using the priority text database below if relevant information exists."
+                        f"CRITICAL RULE 2 (THEME GATEKEEPER): You must ONLY answer legal and law-related questions. If the inquiry is outside the boundaries of law (e.g. cooking, programming, pop culture), politely decline to answer, stating that you are a dedicated AI Legal Intelligence system. "
+                        f"CRITICAL RULE 3 (LANGUAGE MATCHING): You must write your professional response in the EXACT SAME LANGUAGE the user used to ask the question. If they ask in Arabic, reply in formal legal Arabic."
                     )
                     
                     api_url = "https://api.openai.com/v1/chat/completions"
@@ -327,7 +357,7 @@ elif st.session_state.page == "chat":
                         "model": "gpt-4o-mini",
                         "messages": [
                             {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": f"PROVIDED DATA CONTEXT (IF APPLICABLE):\n{legal_context[:30000]}\n\nUSER LEGAL INQUIRY:\n{user_query}"}
+                            {"role": "user", "content": f"PROVIDED DATA CONTEXT FOR {st.session_state.country} (PRIORITY IF APPLICABLE):\n{legal_context[:30000]}\n\nUSER LEGAL INQUIRY:\n{user_query}"}
                         ],
                         "temperature": 0.2
                     }
