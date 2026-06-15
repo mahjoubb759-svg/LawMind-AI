@@ -1,4 +1,6 @@
 import streamlit as st
+import requests
+import json
 import os
 
 # 1. إعدادات الصفحة الأساسية بالمظهر العريض الفخم
@@ -222,17 +224,10 @@ if "lang" not in st.session_state: st.session_state.lang = "ar"
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 محاولة استدعاء المكتبة الرسمية بأمان تزامناً مع التثبيت السحابي الجديد
-client = None
-try:
-    from google import genai
-    from google.genai import types
-    if "gemini" in st.secrets:
-        api_key_val = st.secrets["gemini"]["api_key"].strip()
-        if api_key_val:
-            client = genai.Client(api_key=api_key_val)
-except Exception as import_error:
-    pass
+# 🔐 جلب مفتاح Groq بأمان تام من الخزنة السحابية
+GROQ_API_KEY = ""
+if "groq" in st.secrets:
+    GROQ_API_KEY = st.secrets["groq"]["api_key"].strip()
 
 locales = {
     "en": {
@@ -314,8 +309,8 @@ elif st.session_state.page == "chat":
     if search_button and user_query:
         if legal_context is None:
             st.error(f"❌ Document Error: Please verify that 'law.txt' file exists.")
-        elif client is None:
-            st.error("⚠️ Environment Error: المكتية الرسمية 'google-genai' لم يتم تفعيلها بالكامل بعد في هذا الإصدار السحابي. يرجى الضغط على الكاش وإعادة التشغيل.")
+        elif not GROQ_API_KEY:
+            st.error("⚠️ Configuration Error: Groq API Key is missing in server Secrets.")
         else:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
@@ -326,19 +321,34 @@ elif st.session_state.page == "chat":
                         f"'This specific case is not available in our verified database for {st.session_state.country}.'"
                     )
                     
-                    user_message = f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"
+                    # 🛠️ الاتصال المباشر والمستقر الفائق بـ Groq عبر الـ API الموحد
+                    api_url = "https://api.groq.com/openai/v1/chat/completions"
+                    headers = {
+                        "Authorization": f"Bearer {GROQ_API_KEY}",
+                        "Content-Type": "application/json"
+                    }
                     
-                    response = client.models.generate_content(
-                        model='gemini-1.5-flash',
-                        contents=user_message,
-                        config=types.GenerateContentConfig(
-                            system_instruction=system_prompt,
-                            temperature=0.0
-                        )
-                    )
+                    payload = {
+                        "model": "llama3-70b-8192",  # الموديل الأقوى والأسرع في معالجة النصوص المجانية
+                        "messages": [
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"}
+                        ],
+                        "temperature": 0.0
+                    }
                     
-                    st.session_state.chat_history.append({"role": "assistant", "content": response.text})
-                    st.rerun()
+                    response = requests.post(api_url, headers=headers, json=payload)
+                    response_json = response.json()
+                    
+                    if 'choices' in response_json and response_json['choices']:
+                        output_text = response_json['choices'][0]['message']['content']
+                        st.session_state.chat_history.append({"role": "assistant", "content": output_text})
+                        st.rerun()
+                    elif 'error' in response_json:
+                        st.error(f"🛑 Groq API Error: {response_json['error'].get('message')}")
+                    else:
+                        st.error(f"⚠️ رد غير متوقع من السيرفر: {json.dumps(response_json)}")
+                        
                 except Exception as e:
                     st.error(f"System Error: {str(e)}")
 
