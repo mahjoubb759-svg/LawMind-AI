@@ -209,12 +209,15 @@ st.markdown("""
 
 # 3. إدارة جلسات الذاكرة المؤقتة للتنقل بمرونة بين الواجهات
 if "page" not in st.session_state: st.session_state.page = "landing"
-if "lang" not in st.session_state: st.session_state.lang = "ar"  # جعل اللغة الافتراضية العربية للهاكاثون
+if "lang" not in st.session_state: st.session_state.lang = "ar"  # اللغة الافتراضية العربية للهاكاثون
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 جلب مفتاح OpenAI السري المكتوب مسبقاً في كودك لتشغيل النظام فوراً
-OPENAI_API_KEY = "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"
+# 🔐 جلب مفتاح OpenAI السري بأمان عبر خزنة السيرفر لمنع الحظر
+if "openai" in st.secrets:
+    OPENAI_API_KEY = st.secrets["openai"]["api_key"]
+else:
+    OPENAI_API_KEY = ""
 
 # قاموس الترجمة الفورية الديناميكية
 locales = {
@@ -282,7 +285,6 @@ elif st.session_state.page == "chat":
 
     @st.cache_data
     def load_specific_country_law(country):
-        # البحث عن ملف القوانين في المجلد الفرعي أو الرئيسي لضمان عدم حدوث أخطاء مسارات ثانية
         possible_paths = [
             os.path.join(f"legal_{country}", "law.txt"),
             "law.txt"
@@ -312,7 +314,7 @@ elif st.session_state.page == "chat":
         if legal_context is None:
             st.error(f"❌ Document Error: Please create a file named 'law.txt' inside the folder 'legal_{st.session_state.country}'.")
         elif not OPENAI_API_KEY:
-            st.error("⚠️ OpenAI API Key is missing.")
+            st.error("⚠️ OpenAI API Key is missing in Secrets.")
         else:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
