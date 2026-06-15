@@ -1,5 +1,6 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 import os
 
 # 1. إعدادات الصفحة الأساسية بالمظهر العريض الفخم
@@ -212,12 +213,12 @@ if "lang" not in st.session_state: st.session_state.lang = "ar"
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 جلب المفتاح بأمان تام من الـ Secrets لتجنب حظر أنظمة أمان GitHub
+# 🔐 تهيئة عميل الاتصال الجديد (GenAI Client) المتوافق مع بيئة 2026 وقراءة الـ Secrets
+client = None
 if "gemini" in st.secrets:
-    GEMINI_API_KEY = st.secrets["gemini"]["api_key"].strip()
-    genai.configure(api_key=GEMINI_API_KEY)
-else:
-    GEMINI_API_KEY = ""
+    api_key_val = st.secrets["gemini"]["api_key"].strip()
+    if api_key_val:
+        client = genai.Client(api_key=api_key_val)
 
 locales = {
     "en": {
@@ -242,7 +243,7 @@ locales = {
 current_text = locales[st.session_state.lang]
 
 # ====================================================================
-# الواجهة الأولى: صفحة الهبوط والإعدادات (Landing Page)
+# الواجهة الأولى: صفحة الهبوط
 # ====================================================================
 if st.session_state.page == "landing":
     st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
@@ -275,7 +276,7 @@ if st.session_state.page == "landing":
     st.markdown(f'<div class="credits-container"><div class="team-credits">{current_text["credits"]}</div></div>', unsafe_allow_html=True)
 
 # ====================================================================
-# الواجهة الثانية: منصة المحادثة والشات القانوني (Chat Interface)
+# الواجهة الثانية: شاشة المحادثة
 # ====================================================================
 elif st.session_state.page == "chat":
     st.markdown('<p class="legal-logo" style="font-size: 3rem;">⚖️</p>', unsafe_allow_html=True)
@@ -307,24 +308,30 @@ elif st.session_state.page == "chat":
     if search_button and user_query:
         if legal_context is None:
             st.error(f"❌ Document Error: Please verify that 'law.txt' file exists.")
-        elif not GEMINI_API_KEY:
-            st.error("⚠️ Configuration Error: Gemini API Key is missing in server Secrets.")
+        elif client is None:
+            st.error("⚠️ Configuration Error: Gemini API Key Client could not be initialized.")
         else:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
                 try:
-                    # صياغة الهندسة الصارمة
+                    # صياغة الهندسة المباشرة المتوافقة مع العميل السحابي الجديد لتفادي خطأ 404
                     system_prompt = (
                         f"You are a hyper-strict Legal AI Core specialized in {st.session_state.country} laws. "
                         f"You must answer ONLY and STRICTLY from the provided legal context text database below. If the case is not available, reply exactly with: "
                         f"'This specific case is not available in our verified database for {st.session_state.country}.'"
                     )
                     
-                    user_message = f"SYSTEM INSTRUCTIONS:\n{system_prompt}\n\nVERIFIED LEGAL TEXT DATABASE:\n{legal_context[:30000]}\n\nCITIZEN QUESTION:\n{user_query}"
+                    user_message = f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:30000]}\n\nCITIZEN QUESTION:\n{user_query}"
                     
-                    # 🛠️ [الحل الجذري]: إجبار الحساب الاحترافي (GCP Pro Key) على الحديث مع الموديل بدون تعارض الإصدارات القديمة
-                    model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
-                    response = model.generate_content(user_message)
+                    # الاستدعاء الرسمي الحديث الخالي تماماً من المشاكل
+                    response = client.models.generate_content(
+                        model='gemini-1.5-flash',
+                        contents=user_message,
+                        config=types.GenerateContentConfig(
+                            system_instruction=system_prompt,
+                            temperature=0.0
+                        )
+                    )
                     
                     st.session_state.chat_history.append({"role": "assistant", "content": response.text})
                     st.rerun()
