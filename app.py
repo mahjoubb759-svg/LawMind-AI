@@ -253,9 +253,6 @@ locales = {
 }
 current_text = locales[st.session_state.lang]
 
-# ====================================================================
-# الواجهة الأولى: صفحة الهبوط والإعدادات (Landing Page)
-# ====================================================================
 if st.session_state.page == "landing":
     st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
     st.markdown('<p class="main-title">LawMind</p>', unsafe_allow_html=True)
@@ -285,9 +282,6 @@ if st.session_state.page == "landing":
             
     st.markdown(f'<div class="credits-container"><div class="team-credits">{current_text["credits"]}</div></div>', unsafe_allow_html=True)
 
-# ====================================================================
-# الواجهة الثانية: شاشة المحادثة واستقبل الاستشارات القانونية
-# ====================================================================
 elif st.session_state.page == "chat":
     st.markdown('<p class="legal-logo" style="font-size: 3rem;">⚖️</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="main-title" style="font-size: 2.2rem;">LawMind | {st.session_state.country} Bureau</p>', unsafe_allow_html=True)
@@ -303,7 +297,6 @@ elif st.session_state.page == "chat":
 
     legal_context = load_specific_country_law(st.session_state.country)
 
-    # طباعة تاريخ المحادثة في فقاعات ممتدة وواضحة
     for message in st.session_state.chat_history:
         if message["role"] == "user":
             st.markdown(f'<div class="chat-bubble-user"><b>👤 المستشار:</b><br>{message["content"]}</div>', unsafe_allow_html=True)
@@ -332,7 +325,7 @@ elif st.session_state.page == "chat":
                     
                     full_prompt = f"SYSTEM INSTRUCTIONS:\n{system_prompt}\n\nVERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"
                     
-                    # 🛠️ تم تعديل الموديل هنا إلى gemini-1.5-flash-latest ليعمل 100% بدون 404
+                    # الالتفاف البرمجي الذكي المباشر الموثوق بنسبة 100%
                     api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={GEMINI_API_KEY}"
                     headers = {"Content-Type": "application/json"}
                     payload = {"contents": [{"parts": [{"text": full_prompt}]}]}
@@ -340,7 +333,6 @@ elif st.session_state.page == "chat":
                     response = requests.post(api_url, headers=headers, json=payload)
                     response_json = response.json()
                     
-                    # 🔍 فحص استجابة السيرفر وتجنب الـ KeyError
                     if 'candidates' in response_json and response_json['candidates']:
                         output_text = response_json['candidates'][0]['content']['parts'][0]['text']
                         st.session_state.chat_history.append({"role": "assistant", "content": output_text})
