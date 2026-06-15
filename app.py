@@ -182,7 +182,7 @@ st.markdown("""
         box-shadow: 0 0 25px rgba(56, 189, 248, 0.5) !important;
     }
     
-    /* تنسيق فقاعات المحادثة لتظهر بشكل ممتد وواضح */
+    /* تنسيق فقاعات المحادثة لتبدو واضحة وبحجم ممتد تلقائياً */
     .chat-bubble-user {
         background-color: #1e293b;
         padding: 15px 20px;
@@ -286,7 +286,7 @@ if st.session_state.page == "landing":
     st.markdown(f'<div class="credits-container"><div class="team-credits">{current_text["credits"]}</div></div>', unsafe_allow_html=True)
 
 # ====================================================================
-# الواجهة الثانية: شاشة المحادثة واستقبال الاستشارات
+# الواجهة الثانية: شاشة المحادثة واستقبل الاستشارات القانونية
 # ====================================================================
 elif st.session_state.page == "chat":
     st.markdown('<p class="legal-logo" style="font-size: 3rem;">⚖️</p>', unsafe_allow_html=True)
@@ -303,7 +303,7 @@ elif st.session_state.page == "chat":
 
     legal_context = load_specific_country_law(st.session_state.country)
 
-    # طباعة تاريخ الشات بشكل منسق في فقاعات
+    # طباعة تاريخ المحادثة في فقاعات ممتدة وواضحة
     for message in st.session_state.chat_history:
         if message["role"] == "user":
             st.markdown(f'<div class="chat-bubble-user"><b>👤 المستشار:</b><br>{message["content"]}</div>', unsafe_allow_html=True)
@@ -332,14 +332,15 @@ elif st.session_state.page == "chat":
                     
                     full_prompt = f"SYSTEM INSTRUCTIONS:\n{system_prompt}\n\nVERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"
                     
-                    api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+                    # 🛠️ تم تعديل الموديل هنا إلى gemini-1.5-flash-latest ليعمل 100% بدون 404
+                    api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={GEMINI_API_KEY}"
                     headers = {"Content-Type": "application/json"}
                     payload = {"contents": [{"parts": [{"text": full_prompt}]}]}
                     
                     response = requests.post(api_url, headers=headers, json=payload)
                     response_json = response.json()
                     
-                    # 🔍 فحص استجابة السيرفر وتفادي الـ KeyError
+                    # 🔍 فحص استجابة السيرفر وتجنب الـ KeyError
                     if 'candidates' in response_json and response_json['candidates']:
                         output_text = response_json['candidates'][0]['content']['parts'][0]['text']
                         st.session_state.chat_history.append({"role": "assistant", "content": output_text})
