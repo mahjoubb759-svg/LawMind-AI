@@ -16,7 +16,7 @@ st.markdown("""
         display: none !important;
     }
     
-    /* 🔴 إخفاء شريط Tعديل العلوي وزر Manage App السفلي للجمهور */
+    /* 🔴 إخفاء شريط التعديل العلوي وزر Manage App السفلي للجمهور */
     #MainMenu, footer, header, [data-testid="stDecoration"] {
         visibility: hidden !important;
         display: none !important;
@@ -225,12 +225,23 @@ if "lang" not in st.session_state: st.session_state.lang = "ar"
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 جلب مفتاح Google Gemini السري بأمان عبر خزنة السيرفر لمنع الحظر
-if "gemini" in st.secrets:
-    GEMINI_API_KEY = st.secrets["gemini"]["api_key"]
+# 🔐 [خارج الصندوق]: إدارة وتمرير الـ API KEY بشكل آمن ومزدوج
+GEMINI_API_KEY = ""
+
+# أ) جلب المفتاح أولاً من خزنة السيرفر إن وجد
+if "gemini" in st.secrets and "api_key" in st.secrets["gemini"]:
+    GEMINI_API_KEY = st.secrets["gemini"]["api_key"].strip()
+
+# ب) التمرير الإجباري المباشر لقطع دابر أي خطأ في السيرفر
+# ⚠️ ضع مفتاحك الجديد المنسوخ من Google AI Studio هنا مباشرة بين علامتي الاقتباس
+HARDCODED_API_KEY = "ضع_هنا_مفتاح_جيميناي_الجديد_تماما"
+
+if HARDCODED_API_KEY and HARDCODED_API_KEY != "ضع_هنا_مفتاح_جيميناي_الجديد_تماما":
+    GEMINI_API_KEY = HARDCODED_API_KEY.strip()
+
+# تهيئة وإعداد مكتبة جوجل بالمفتاح النهائي النظيف
+if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
-else:
-    GEMINI_API_KEY = ""
 
 # قاموس الترجمة الفورية الديناميكية
 locales = {
@@ -327,37 +338,33 @@ elif st.session_state.page == "chat":
         if legal_context is None:
             st.error(f"❌ Document Error: Please create a file named 'law.txt' inside the folder 'legal_{st.session_state.country}'.")
         elif not GEMINI_API_KEY:
-            st.error("⚠️ Gemini API Key is missing in Secrets.")
+            st.error("⚠️ Gemini API Key is missing. Please provide a valid key in the code variable.")
         else:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
                 try:
-                    # صياغة الاستدعاء التقليدي الصافي المتوافق تماماً مع النسخ القديمة والحديثة للمكتبة دون مسارات معقدة
-                    system_prompt = (
+                    # صياغة الهندسة المباشرة المتوافقة مع كافة تحديثات مكتبات جوجل لعام 2026
+                    system_instruction = (
                         f"You are a hyper-strict Legal AI Core named 'LawMind | AI Legal Intelligence' specialized in {st.session_state.country} laws.\n"
                         f"You must answer ONLY and STRICTLY from the provided legal context text below. If the case is not available, reply exactly with: "
                         f"'This specific case is not available in our verified database for {st.session_state.country}.'"
                     )
                     
-                    user_message = f"SYSTEM INSTRUCTIONS:\n{system_prompt}\n\nVERIFIED LEGAL DATABASE:\n{legal_context[:30000]}\n\nCITIZEN QUESTION:\n{user_query}"
+                    model = genai.GenerativeModel(
+                        model_name="gemini-1.5-flash",
+                        system_instruction=system_instruction
+                    )
                     
-                    # الالتفاف حول مشكلة الإصدار عبر استخدام دالة تشغيل بسيطة ومباشرة
-                    response = genai.generate_text(
-                        model='models/text-bison-001', # هذا الموديل كلاسيكي ومضمون العمل على نظام v1beta القديم المثبت عندك
-                        prompt=user_message,
-                        temperature=0.0
+                    user_message = f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:40000]}\n\nCITIZEN QUESTION:\n{user_query}"
+                    
+                    response = model.generate_content(
+                        user_message,
+                        generation_config={"temperature": 0.0}
                     )
                     
                     st.session_state.chat_history.append({"role": "assistant", "content": response.text})
                     st.rerun()
                 except Exception as e:
-                    # محاولة ثانية بالنموذج الاحتياطي في حال تعذر الأول
-                    try:
-                        model = genai.GenerativeModel('gemini-pro')
-                        response = model.generate_content(user_message)
-                        st.session_state.chat_history.append({"role": "assistant", "content": response.text})
-                        st.rerun()
-                    except Exception as e2:
-                        st.error(f"System Error: {str(e2)}")
+                    st.error(f"System Error: {str(e)}")
 
 st.markdown('<p class="footer-custom">LawMind | AI Legal Intelligence • Powered by Moroccan Innovation 🇲🇦 • © 2026</p>', unsafe_allow_html=True)
