@@ -1,6 +1,4 @@
 import streamlit as st
-from google import genai
-from google.genai import types
 import os
 
 # 1. إعدادات الصفحة الأساسية بالمظهر العريض الفخم
@@ -182,7 +180,6 @@ st.markdown("""
         box-shadow: 0 0 25px rgba(56, 189, 248, 0.5) !important;
     }
     
-    /* تنسيق فقاعات الشات لتكون واضحة وممتدة تلقائياً */
     .chat-bubble-user {
         background-color: #1e293b;
         padding: 15px 20px;
@@ -225,12 +222,17 @@ if "lang" not in st.session_state: st.session_state.lang = "ar"
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 [التطبيق الحرفي للدليل الأحدث لعام 2026]: تهيئة عميل الذكاء الموحد من الـ Secrets السحابية
+# 🔐 محاولة استدعاء المكتبة الرسمية بأمان تزامناً مع التثبيت السحابي الجديد
 client = None
-if "gemini" in st.secrets:
-    api_key_val = st.secrets["gemini"]["api_key"].strip()
-    if api_key_val:
-        client = genai.Client(api_key=api_key_val)
+try:
+    from google import genai
+    from google.genai import types
+    if "gemini" in st.secrets:
+        api_key_val = st.secrets["gemini"]["api_key"].strip()
+        if api_key_val:
+            client = genai.Client(api_key=api_key_val)
+except Exception as import_error:
+    pass
 
 locales = {
     "en": {
@@ -313,7 +315,7 @@ elif st.session_state.page == "chat":
         if legal_context is None:
             st.error(f"❌ Document Error: Please verify that 'law.txt' file exists.")
         elif client is None:
-            st.error("⚠️ Configuration Error: Gemini API Key Client could not be initialized from Secrets.")
+            st.error("⚠️ Environment Error: المكتية الرسمية 'google-genai' لم يتم تفعيلها بالكامل بعد في هذا الإصدار السحابي. يرجى الضغط على الكاش وإعادة التشغيل.")
         else:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
@@ -326,7 +328,6 @@ elif st.session_state.page == "chat":
                     
                     user_message = f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"
                     
-                    # 🛠️ [التطبيق الحرفي للدليل المحدث لعام 2026]
                     response = client.models.generate_content(
                         model='gemini-1.5-flash',
                         contents=user_message,
