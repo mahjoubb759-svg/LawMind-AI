@@ -1,5 +1,5 @@
 import streamlit as st
-from openai import OpenAI
+import google.generativeai as genai
 import os
 
 # 1. إعدادات الصفحة الأساسية بالمظهر العريض الفخم
@@ -225,11 +225,12 @@ if "lang" not in st.session_state: st.session_state.lang = "ar"  # اللغة ا
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 جلب مفتاح OpenAI السري بأمان عبر خزنة السيرفر لمنع الحظر
-if "openai" in st.secrets:
-    OPENAI_API_KEY = st.secrets["openai"]["api_key"]
+# 🔐 جلب مفتاح Google Gemini السري بأمان عبر خزنة السيرفر لمنع الحظر
+if "gemini" in st.secrets:
+    GEMINI_API_KEY = st.secrets["gemini"]["api_key"]
+    genai.configure(api_key=GEMINI_API_KEY)
 else:
-    OPENAI_API_KEY = ""
+    GEMINI_API_KEY = ""
 
 # قاموس الترجمة الفورية الديناميكية
 locales = {
@@ -325,22 +326,26 @@ elif st.session_state.page == "chat":
     if search_button and user_query:
         if legal_context is None:
             st.error(f"❌ Document Error: Please create a file named 'law.txt' inside the folder 'legal_{st.session_state.country}'.")
-        elif not OPENAI_API_KEY:
-            st.error("⚠️ OpenAI API Key is missing in Secrets.")
+        elif not GEMINI_API_KEY:
+            st.error("⚠️ Gemini API Key is missing in Secrets.")
         else:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
                 try:
-                    client = OpenAI(api_key=OPENAI_API_KEY)
-                    system_instruction = f"You are a hyper-strict Legal AI Core named 'LawMind | AI Legal Intelligence' specialized in {st.session_state.country} laws. You must answer ONLY and STRICTLY from the provided legal context text below. If the case is not available, reply exactly with: 'This specific case is not available in our verified database for {st.session_state.country}.'"
-                    user_message = f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"
-                    
-                    response = client.chat.completions.create(
-                        model="gpt-4o-mini",
-                        messages=[{"role": "system", "content": system_instruction}, {"role": "user", "content": user_message}],
-                        temperature=0.0
+                    # إعداد نموذج جيميناي السريع والذكي والمجاني
+                    model = genai.GenerativeModel(
+                        model_name="gemini-1.5-flash",
+                        system_instruction=f"You are a hyper-strict Legal AI Core named 'LawMind | AI Legal Intelligence' specialized in {st.session_state.country} laws. You must answer ONLY and STRICTLY from the provided legal context text below. If the case is not available, reply exactly with: 'This specific case is not available in our verified database for {st.session_state.country}.'"
                     )
-                    st.session_state.chat_history.append({"role": "assistant", "content": response.choices[0].message.content})
+                    
+                    user_message = f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:40000]}\n\nCITIZEN QUESTION:\n{user_query}"
+                    
+                    response = model.generate_content(
+                        user_message,
+                        generation_config={"temperature": 0.0}
+                    )
+                    
+                    st.session_state.chat_history.append({"role": "assistant", "content": response.text})
                     st.rerun()
                 except Exception as e:
                     st.error(f"System Error: {str(e)}")
