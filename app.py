@@ -87,7 +87,6 @@ st.markdown("""
         padding-bottom: 25px;
     }
     
-    /* إصلاح جذري لتداخل الـ Badge عند تغيير اللغات */
     .badge-container {
         display: flex;
         justify-content: center;
@@ -251,7 +250,6 @@ if st.session_state.page == "landing":
     st.markdown('<p class="main-title">LawMind</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">AI Legal Intelligence</p>', unsafe_allow_html=True)
     
-    # 🛠️ تم إزالة LawMind المكررة بناءً على طلبك
     st.markdown(f'<div class="vision-container"><p class="vision-text"> {current_text["vision_native"]}</p></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="badge-container"><span class="moroccan-badge">{current_text["badge"]}</span></div>', unsafe_allow_html=True)
     
@@ -323,7 +321,7 @@ elif st.session_state.page == "chat":
                     }
                     
                     payload = {
-                        "model": "llama3-8b-8192",  # ⚡ الانتقال للموديل الأسرع والأكثر استقراراً للحسابات المجانية
+                        "model": "llama-3.1-8b-instant",  # ⚡ الانتقال للموديل المستقر المعتمد حالياً لمنع أخطاء التحديث
                         "messages": [
                             {"role": "system", "content": system_prompt},
                             {"role": "user", "content": f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"}
