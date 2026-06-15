@@ -182,6 +182,7 @@ st.markdown("""
         box-shadow: 0 0 25px rgba(56, 189, 248, 0.5) !important;
     }
     
+    /* تنسيق فقاعات الشات لتكون واضحة وممتدة تلقائياً */
     .chat-bubble-user {
         background-color: #1e293b;
         padding: 15px 20px;
@@ -224,7 +225,7 @@ if "lang" not in st.session_state: st.session_state.lang = "ar"
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 [تطبيق حرفي للدليل الرسمي]: تهيئة العميل الجديد الموحد لعام 2026 وقراءة الـ Secrets
+# 🔐 [التطبيق الحرفي للدليل الأحدث لعام 2026]: تهيئة عميل الذكاء الموحد من الـ Secrets السحابية
 client = None
 if "gemini" in st.secrets:
     api_key_val = st.secrets["gemini"]["api_key"].strip()
@@ -325,7 +326,7 @@ elif st.session_state.page == "chat":
                     
                     user_message = f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"
                     
-                    # 🛠️ [التطبيق الحرفي للـ Documentation]: الاستدعاء الرسمي عبر الهيكلية المحدثة
+                    # 🛠️ [التطبيق الحرفي للدليل المحدث لعام 2026]
                     response = client.models.generate_content(
                         model='gemini-1.5-flash',
                         contents=user_message,
