@@ -224,7 +224,7 @@ if "lang" not in st.session_state: st.session_state.lang = "ar"
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 جلب مفتاح Groq بأمان تام من الخزنة السحابية
+# 🔐 جلب مفتاح Groq بأمان تام من الخزنة السحابية Secrets
 GROQ_API_KEY = ""
 if "groq" in st.secrets:
     GROQ_API_KEY = st.secrets["groq"]["api_key"].strip()
@@ -286,14 +286,13 @@ elif st.session_state.page == "chat":
     st.markdown(f'<p class="sub-title" style="font-size: 0.9rem; margin-bottom: 20px;">AI Legal Intelligence</p>', unsafe_allow_html=True)
 
     @st.cache_data
-    def load_specific_country_law(country):
-        possible_paths = [os.path.join(f"legal_{country}", "law.txt"), "law.txt"]
-        for path in possible_paths:
-            if os.path.exists(path):
-                with open(path, "r", encoding="utf-8") as f: return f.read()
+    def load_specific_country_law():
+        # تعديل مسار قراءة الملف ليكون من المسار الرئيسي مباشرة للمستودع
+        if os.path.exists("law.txt"):
+            with open("law.txt", "r", encoding="utf-8") as f: return f.read()
         return None
 
-    legal_context = load_specific_country_law(st.session_state.country)
+    legal_context = load_specific_country_law()
 
     for message in st.session_state.chat_history:
         if message["role"] == "user":
@@ -308,7 +307,7 @@ elif st.session_state.page == "chat":
 
     if search_button and user_query:
         if legal_context is None:
-            st.error(f"❌ Document Error: Please verify that 'law.txt' file exists.")
+            st.error(f"❌ Document Error: Please verify that 'law.txt' file exists in the repository root.")
         elif not GROQ_API_KEY:
             st.error("⚠️ Configuration Error: Groq API Key is missing in server Secrets.")
         else:
@@ -321,7 +320,6 @@ elif st.session_state.page == "chat":
                         f"'This specific case is not available in our verified database for {st.session_state.country}.'"
                     )
                     
-                    # 🛠️ الاتصال المباشر والمستقر الفائق بـ Groq عبر الـ API الموحد
                     api_url = "https://api.groq.com/openai/v1/chat/completions"
                     headers = {
                         "Authorization": f"Bearer {GROQ_API_KEY}",
@@ -329,7 +327,7 @@ elif st.session_state.page == "chat":
                     }
                     
                     payload = {
-                        "model": "llama3-70b-8192",  # الموديل الأقوى والأسرع في معالجة النصوص المجانية
+                        "model": "llama3-70b-8192",
                         "messages": [
                             {"role": "system", "content": system_prompt},
                             {"role": "user", "content": f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"}
