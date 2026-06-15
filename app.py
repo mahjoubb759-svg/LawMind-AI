@@ -96,6 +96,8 @@ st.markdown("""
         margin-bottom: 35px;
         clear: both;
     }
+    
+    /* إصلاح جذري ومقاوم لتشوه نصوص الـ Badge العربية */
     .moroccan-badge {
         text-align: center !important;
         color: #065F46 !important;
@@ -107,6 +109,7 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         display: inline-block;
         white-space: nowrap;
+        unicode-bidi: plaintext !important; /* يمنع المتصفح من قلب الترتيب */
     }
     
     .credits-container {
@@ -223,56 +226,47 @@ OPENAI_API_KEY = ""
 if "openai" in st.secrets:
     OPENAI_API_KEY = st.secrets["openai"]["api_key"].strip()
 
-# سطر الـ Credits ثابت دائماً باللغة الإنجليزية للمظهر الاحترافي
+# سطر الـ Credits ثابت دائماً باللغة الإنجليزية
 fixed_credits = "💡 Developed by: <span class='team-names'>Mr. Elmahjoub Boumagout</span> & <span class='team-names'>Mrs. ASMA AHLBIHI</span>"
 
-# إعداد اللغات الموسعة (إضافة الإسبانية والألمانية)
+# نصوص اللغات مع التعديل الجديد للرؤية وضبط نصوص الـ Badge
 locales = {
     "en": {
-        "vision_native": "is the first Moroccan and global platform that harnesses artificial intelligence to serve humanity in the field of law.",
+        "vision_html": "<b>LawMind</b> is the first Moroccan platform that harnesses artificial intelligence to serve humanity in the field of legal consultations.",
         "badge": "100% Moroccan Product 🇲🇦",
         "select_lang": "Select Language", "select_country": "Select Country Office", "btn_enter": "Launch Intelligence", "placeholder": "Ask your strict legal question here...", "search_btn": "Consult System"
     },
     "ar": {
-        "vision_native": "هي أول منصة مغربية وعالمية تسخر الذكاء الاصطناعي لخدمة البشرية في مجال القانون.",
-        "badge": "منتج مغربي 100% 🇲🇦",
+        "vision_html": "هي اول منصة مغربية تسخر الذكاء الاصطناعي لخدمة البشرية في مجال الاستشارات القانونية.",
+        "badge": "منتج مغربي 100% 🇲🇦", # صياغة عربية خالصة تمنع التشوه اللغوي
         "select_lang": "حدد اللغة", "select_country": "حدد مكتب الدولة", "btn_enter": "إطلاق الذكاء القانوني", "placeholder": "اطرح سؤالك القانوني الصارم هنا...", "search_btn": "استشارة النظام"
     },
     "fr": {
-        "vision_native": "est la première plateforme marocaine et mondiale qui met l'intelligence artificielle au service de l'humanité dans le domaine du droit.",
+        "vision_html": "<b>LawMind</b> est la primera plateforme marocaine qui met l'intelligence artificielle au service de l'humanité dans le domaine des consultations juridiques.",
         "badge": "Produit 100% Marocain 🇲🇦",
         "select_lang": "Choisir la Langue", "select_country": "Choisir le Bureau de Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système"
     },
     "es": {
-        "vision_native": "es la primera plataforma marroquí y global que pone la inteligencia artificial al servicio de la humanidad en el campo del derecho.",
+        "vision_html": "<b>LawMind</b> es la primera plataforma marroquí que pone la inteligencia artificial al servicio de la humanidad en el campo de las consultas jurídicas.",
         "badge": "Producto 100% Marroquí 🇲🇦",
         "select_lang": "Seleccionar Idioma", "select_country": "Seleccionar Oficina de País", "btn_enter": "Iniciar Inteligencia", "placeholder": "Haga su pregunta legal estricta aquí...", "search_btn": "Consultar Sistema"
     },
     "de": {
-        "vision_native": "ist die erste marokkanische und globale Plattform, die künstliche Intelligenz im Dienste der Menschheit im Bereich des Rechts einsetzt.",
+        "vision_html": "<b>LawMind</b> ist die erste marokkanische Plattform, die künstliche Intelligenz im Dienste der Menschheit im Bereich der Rechtsberatung einsetzt.",
         "badge": "100% Marokkanisches Produkt 🇲🇦",
         "select_lang": "Sprache auswählen", "select_country": "Länderbüro auswählen", "btn_enter": "Intelligenz starten", "placeholder": "Stellen Sie hier Ihre strenge Rechtsfrage...", "search_btn": "System konsultieren"
     }
 }
 current_text = locales[st.session_state.lang]
 
-# قائمة الدول الموسعة
-supported_countries = [
-    "Morocco 🇲🇦", 
-    "France 🇫🇷", 
-    "USA 🇺🇸", 
-    "Saudi Arabia 🇸🇦", 
-    "Egypt 🇪🇬", 
-    "Spain 🇪🇸", 
-    "UAE 🇦🇪"
-]
+supported_countries = ["Morocco 🇲🇦", "France 🇫🇷", "USA 🇺🇸", "Saudi Arabia 🇸🇦", "Egypt 🇪🇬", "Spain 🇪🇸", "UAE 🇦🇪"]
 
 if st.session_state.page == "landing":
     st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
     st.markdown('<p class="main-title">LawMind</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">AI Legal Intelligence</p>', unsafe_allow_html=True)
     
-    st.markdown(f'<div class="vision-container"><p class="vision-text"> <b>LawMind</b> {current_text["vision_native"]}</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="vision-container"><p class="vision-text">{current_text["vision_html"]}</p></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="badge-container"><span class="moroccan-badge">{current_text["badge"]}</span></div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
@@ -288,7 +282,6 @@ if st.session_state.page == "landing":
         
     with col2:
         st.markdown(f'<div class="selection-box"><h3>📍 {current_text["select_country"]}</h3>', unsafe_allow_html=True)
-        # استخراج اسم الدولة الافتراضية للـ index لئلا يحدث خطأ أثناء التحديث
         clean_country_names = [c.split()[0] for c in supported_countries]
         default_country_idx = clean_country_names.index(st.session_state.country) if st.session_state.country in clean_country_names else 0
         
@@ -337,7 +330,6 @@ elif st.session_state.page == "chat":
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Legal Database & Universal Law Knowledge..."):
                 try:
-                    # 🛠️ توجيه الذكاء الاصطناعي للفصل الذكي: يركز على الدولة المختارة إلا إذا حدد المستخدم دولة أخرى في نص سؤاله
                     system_prompt = (
                         f"You are a strict, hyper-focused Legal Expert AI core specialized in international jurisprudence. "
                         f"Your default focus for this session is set to {st.session_state.country} laws. "
