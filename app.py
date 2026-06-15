@@ -6,31 +6,20 @@ import os
 # 1. إعدادات الصفحة الأساسية بالمظهر العريض الفخم
 st.set_page_config(page_title="LawMind | AI Legal Intelligence", page_icon="⚖️", layout="wide")
 
-# 2. تصميم الـ Frontend الاحترافي المطور مع إخفاء القائمة الجانبية وأدوات المنصة والشعارات السفلية
+# 2. تصميم الـ Frontend الاحترافي المطور والمقاوم لتداخل النصوص
 st.markdown("""
     <style>
-    /* إخفاء القائمة الجانبية بالكامل */
-    [data-testid="stSidebar"] {
+    /* إخفاء القائمة الجانبية بالكامل وأدوات المنصة الافتراضية */
+    [data-testid="stSidebar"], [data-testid="stSidebarCollapseButton"] {
         display: none !important;
     }
-    [data-testid="stSidebarCollapseButton"] {
-        display: none !important;
-    }
-    
-    /* إخفاء شريط التعديل العلوي وزر Manage App السفلي */
     #MainMenu, footer, header, [data-testid="stDecoration"] {
         visibility: hidden !important;
         display: none !important;
     }
-    
-    /* إخفاء شريط Hosted with Streamlit السفلي */
-    .viewerBadge_container__1QSob, [data-testid="stViewerBadge"], .styles_viewerBadge__NiTeF {
+    .viewerBadge_container__1QSob, [data-testid="stViewerBadge"], .styles_viewerBadge__NiTeF, div[class^="viewerBadge"] {
         display: none !important;
         visibility: hidden !important;
-    }
-    
-    div[class^="viewerBadge"] {
-        display: none !important;
     }
     
     .block-container {
@@ -98,11 +87,15 @@ st.markdown("""
         padding-bottom: 25px;
     }
     
+    /* إصلاح جذري لتداخل الـ Badge عند تغيير اللغات */
     .badge-container {
         display: flex;
         justify-content: center;
+        align-items: center;
         width: 100%;
+        margin-top: 10px;
         margin-bottom: 35px;
+        clear: both;
     }
     .moroccan-badge {
         text-align: center !important;
@@ -110,9 +103,11 @@ st.markdown("""
         font-size: 0.95rem;
         font-weight: bold;
         background-color: #D1FAE5;
-        padding: 6px 18px;
+        padding: 8px 24px;
         border-radius: 50px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: inline-block;
+        white-space: nowrap;
     }
     
     .credits-container {
@@ -224,26 +219,28 @@ if "lang" not in st.session_state: st.session_state.lang = "ar"
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 جلب مفتاح Groq بأمان تام من الخزنة السحابية Secrets
+# 🔐 قراءة الـ Secrets
 GROQ_API_KEY = ""
 if "groq" in st.secrets:
     GROQ_API_KEY = st.secrets["groq"]["api_key"].strip()
 
+# ضبط اللغات وإصلاح سطر الرؤية المكرر
 locales = {
     "en": {
-        "vision": "The <b>LawMind</b> platform is the first Moroccan and global platform that harnesses artificial intelligence to serve humanity in the field of law.",
+        "vision": "هي أول منصة مغربية وعالمية تسخر الذكاء الاصطناعي لخدمة البشرية في مجال القانون.", # كود موحد يدعم الواجهة العربية
+        "vision_native": "The first Moroccan and global platform that harnesses artificial intelligence to serve humanity in the field of law.",
         "badge": "100% Moroccan Product 🇲🇦",
         "credits": "💡 Developed by: <span class='team-names'>Mr. Elmahjoub Boumagout</span> & <span class='team-names'>Mrs. ASMA AHLBIHI</span>",
         "select_lang": "Select Language", "select_country": "Select Country", "btn_enter": "Launch Intelligence", "placeholder": "Ask your strict legal question here...", "search_btn": "Consult System"
     },
     "ar": {
-        "vision": "منصة <b>LawMind</b> هي أول منصة مغربية وعالمية تسخر الذكاء الاصطناعي لخدمة البشرية في مجال القانون.",
-        "badge": "🇲🇦 منتج مغربي 100%",
+        "vision_native": "هي أول منصة مغربية وعالمية تسخر الذكاء الاصطناعي لخدمة البشرية في مجال القانون.",
+        "badge": "منتج مغربي 100% 🇲🇦",
         "credits": "💡 من إنجاز: <span class='team-names'>السيد Elmahjoub Boumagout</span> و <span class='team-names'>السيدة ASMA AHLBIHI</span>",
         "select_lang": "حدد اللغة", "select_country": "حدد الدولة", "btn_enter": "إطلاق الذكاء القانوني", "placeholder": "اطرح سؤالك القانوني الصارم هنا...", "search_btn": "استشارة النظام"
     },
     "fr": {
-        "vision": "La plateforme <b>LawMind</b> est la première plateforme marocaine et mondiale qui met l'intelligence artificielle au service de l'humanité dans le domaine du droit.",
+        "vision_native": "La première plateforme marocaine et mondiale qui met l'intelligence artificielle au service de l'humanité dans le domaine du droit.",
         "badge": "Produit 100% Marocain 🇲🇦",
         "credits": "💡 Développé par: <span class='team-names'>M. Elmahjoub Boumagout</span> & <span class='team-names'>Mme ASMA AHLBIHI</span>",
         "select_lang": "Choisir la Langue", "select_country": "Choisir le Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système"
@@ -255,7 +252,9 @@ if st.session_state.page == "landing":
     st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
     st.markdown('<p class="main-title">LawMind</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">AI Legal Intelligence</p>', unsafe_allow_html=True)
-    st.markdown(f'<div class="vision-container"><p class="vision-text">{current_text["vision"]}</p></div>', unsafe_allow_html=True)
+    
+    # بناء سطر الرؤية بدون تكرار الكلمة
+    st.markdown(f'<div class="vision-container"><p class="vision-text"><b>LawMind</b> {current_text["vision_native"]}</p></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="badge-container"><span class="moroccan-badge">{current_text["badge"]}</span></div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
@@ -287,7 +286,6 @@ elif st.session_state.page == "chat":
 
     @st.cache_data
     def load_specific_country_law():
-        # تعديل مسار قراءة الملف ليكون من المسار الرئيسي مباشرة للمستودع
         if os.path.exists("law.txt"):
             with open("law.txt", "r", encoding="utf-8") as f: return f.read()
         return None
@@ -307,9 +305,9 @@ elif st.session_state.page == "chat":
 
     if search_button and user_query:
         if legal_context is None:
-            st.error(f"❌ Document Error: Please verify that 'law.txt' file exists in the repository root.")
+            st.error(f"❌ Document Error: Please verify that 'law.txt' file exists.")
         elif not GROQ_API_KEY:
-            st.error("⚠️ Configuration Error: Groq API Key is missing in server Secrets.")
+            st.error("⚠️ Configuration Error: Groq API Key is missing.")
         else:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
@@ -327,7 +325,7 @@ elif st.session_state.page == "chat":
                     }
                     
                     payload = {
-                        "model": "llama3-70b-8192",
+                        "model": "llama-3.3-70b-versatile",  # 🚀 التحديث الرسمي للموديل لعام 2026
                         "messages": [
                             {"role": "system", "content": system_prompt},
                             {"role": "user", "content": f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:25000]}\n\nCITIZEN QUESTION:\n{user_query}"}
@@ -345,7 +343,7 @@ elif st.session_state.page == "chat":
                     elif 'error' in response_json:
                         st.error(f"🛑 Groq API Error: {response_json['error'].get('message')}")
                     else:
-                        st.error(f"⚠️ رد غير متوقع من السيرفر: {json.dumps(response_json)}")
+                        st.error(f"⚠️ Unexpected Server Response.")
                         
                 except Exception as e:
                     st.error(f"System Error: {str(e)}")
