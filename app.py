@@ -249,7 +249,7 @@ locales = {
     "fr": {
         "vision": "La plateforme <b>LawMind</b> est la première plateforme marocaine et mondiale qui met l'intelligence artificielle au service de l'humanité dans le domaine du droit.",
         "badge": "Produit 100% Marocain 🇲🇦",
-        "credits": "💡 Développé par: <span class='team-names'>M. Elmahjoub Boumagout</span> & <span class='team-names'>Mme ASMA AHLBIHI</span>",
+        "credits": "💡 Développە par: <span class='team-names'>M. Elmahjoub Boumagout</span> & <span class='team-names'>Mme ASMA AHLBIHI</span>",
         "select_lang": "Choisir la Langue", "select_country": "Choisir le Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système", "status_sidebar": "État du Système"
     }
 }
@@ -332,21 +332,24 @@ elif st.session_state.page == "chat":
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
                 try:
-                    # الاعتماد على النموذج الكلاسيكي المستقر لإنهاء مشكلة الـ 404 للأبد
-                    model = genai.GenerativeModel(
-                        model_name="gemini-pro",
-                        generation_config={"temperature": 0.0}
-                    )
-                    
-                    full_prompt = (
+                    # التهيئة الصحيحة للنموذج الحديث والمتوافق مع التحديث الأخير للمكتبة
+                    system_instruction = (
                         f"You are a hyper-strict Legal AI Core named 'LawMind | AI Legal Intelligence' specialized in {st.session_state.country} laws.\n"
                         f"You must answer ONLY and STRICTLY from the provided legal context text below. If the case is not available, reply exactly with: "
-                        f"'This specific case is not available in our verified database for {st.session_state.country}.'\n\n"
-                        f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:30000]}\n\n"
-                        f"CITIZEN QUESTION:\n{user_query}"
+                        f"'This specific case is not available in our verified database for {st.session_state.country}.'"
                     )
                     
-                    response = model.generate_content(full_prompt)
+                    model = genai.GenerativeModel(
+                        model_name="gemini-1.5-flash",
+                        system_instruction=system_instruction
+                    )
+                    
+                    user_message = f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:40000]}\n\nCITIZEN QUESTION:\n{user_query}"
+                    
+                    response = model.generate_content(
+                        user_message,
+                        generation_config={"temperature": 0.0}
+                    )
                     
                     st.session_state.chat_history.append({"role": "assistant", "content": response.text})
                     st.rerun()
