@@ -213,47 +213,44 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# تهيئة متغيرات الجلسة (Session State)
 if "page" not in st.session_state: st.session_state.page = "landing"
 if "lang" not in st.session_state: st.session_state.lang = "ar"
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
-# 🔐 قراءة مفتاح OpenAI الآمن من السيكرتس
+# 🔐 قراءة مفتاح OpenAI بأمان
 OPENAI_API_KEY = ""
 if "openai" in st.secrets:
     OPENAI_API_KEY = st.secrets["openai"]["api_key"].strip()
 
-# اللغات والنصوص المستخدمة في الواجهة
+# سطر الـ Credits ثابت دائماً باللغة الإنجليزية
+fixed_credits = "💡 Developed by: <span class='team-names'>Mr. Elmahjoub Boumagout</span> & <span class='team-names'>Mrs. ASMA AHLBIHI</span>"
+
 locales = {
     "en": {
         "vision_native": "is the first Moroccan and global platform that harnesses artificial intelligence to serve humanity in the field of law.",
         "badge": "100% Moroccan Product 🇲🇦",
-        "credits": "💡 Developed by: <span class='team-names'>Mr. Elmahjoub Boumagout</span> & <span class='team-names'>Mrs. ASMA AHLBIHI</span>",
         "select_lang": "Select Language", "select_country": "Select Country", "btn_enter": "Launch Intelligence", "placeholder": "Ask your strict legal question here...", "search_btn": "Consult System"
     },
     "ar": {
         "vision_native": "هي أول منصة مغربية وعالمية تسخر الذكاء الاصطناعي لخدمة البشرية في مجال القانون.",
         "badge": "منتج مغربي 100% 🇲🇦",
-        "credits": "💡 من إنجاز: <span class='team-names'>السيد Elmahjoub Boumagout</span> و <span class='team-names'>السيدة ASMA AHLBIHI</span>",
         "select_lang": "حدد اللغة", "select_country": "حدد الدولة", "btn_enter": "إطلاق الذكاء القانوني", "placeholder": "اطرح سؤالك القانوني الصارم هنا...", "search_btn": "استشارة النظام"
     },
     "fr": {
         "vision_native": "est la première plateforme marocaine et mondiale qui met l'intelligence artificielle au service de l'humanité dans le domaine du droit.",
         "badge": "Produit 100% Marocain 🇲🇦",
-        "credits": "💡 Développé par: <span class='team-names'>M. Elmahjoub Boumagout</span> & <span class='team-names'>Mme ASMA AHLBIHI</span>",
         "select_lang": "Choisir la Langue", "select_country": "Choisir le Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système"
     }
 }
 current_text = locales[st.session_state.lang]
 
-# --- صفحة الترحيب والتهيئة (Landing Page) ---
 if st.session_state.page == "landing":
     st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
     st.markdown('<p class="main-title">LawMind</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">AI Legal Intelligence</p>', unsafe_allow_html=True)
     
-    st.markdown(f'<div class="vision-container"><p class="vision-text"> {current_text["vision_native"]}</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="vision-container"><p class="vision-text"> <b>LawMind</b> {current_text["vision_native"]}</p></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="badge-container"><span class="moroccan-badge">{current_text["badge"]}</span></div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
@@ -276,9 +273,8 @@ if st.session_state.page == "landing":
         st.session_state.page = "chat"
         st.rerun()
             
-    st.markdown(f'<div class="credits-container"><div class="team-credits">{current_text["credits"]}</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="credits-container"><div class="team-credits">{fixed_credits}</div></div>', unsafe_allow_html=True)
 
-# --- صفحة الشات الذكي (Chat Page) ---
 elif st.session_state.page == "chat":
     st.markdown('<p class="legal-logo" style="font-size: 3rem;">⚖️</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="main-title" style="font-size: 2.2rem;">LawMind | {st.session_state.country} Bureau</p>', unsafe_allow_html=True)
@@ -287,12 +283,14 @@ elif st.session_state.page == "chat":
     @st.cache_data
     def load_specific_country_law():
         if os.path.exists("law.txt"):
-            with open("law.txt", "r", encoding="utf-8") as f: return f.read()
-        return None
+            try:
+                with open("law.txt", "r", encoding="utf-8-sig") as f: return f.read()
+            except:
+                with open("law.txt", "r", encoding="utf-8", errors="ignore") as f: return f.read()
+        return ""
 
     legal_context = load_specific_country_law()
 
-    # عرض تاريخ المحادثة
     for message in st.session_state.chat_history:
         if message["role"] == "user":
             st.markdown(f'<div class="chat-bubble-user"><b>👤 المستشار:</b><br>{message["content"]}</div>', unsafe_allow_html=True)
@@ -305,25 +303,20 @@ elif st.session_state.page == "chat":
         search_button = st.form_submit_button(current_text["search_btn"])
 
     if search_button and user_query:
-        if legal_context is None:
-            st.error(f"❌ Document Error: Please verify that 'law.txt' file exists.")
-        elif not OPENAI_API_KEY:
-            st.error("⚠️ Configuration Error: OpenAI API Key is missing in Secrets.")
+        if not OPENAI_API_KEY:
+            st.error("⚠️ Configuration Error: OpenAI API Key is missing.")
         else:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
-            with st.spinner("Analyzing Database..."):
+            with st.spinner("Analyzing Legal Database & Core Knowledge..."):
                 try:
-                    # نظام توجيه صارم لإجبار النموذج على الرد بنفس لغة سؤال المستخدم
+                    # 🛠️ التعديل الجوهري: تحويل محرك الـ AI إلى مستشار قانوني عالمي صارم يمنع الخروج عن الثيم القانوني لأي دولة
                     system_prompt = (
-                        f"You are a strict legal expert AI engine specialized in {st.session_state.country} laws. "
-                        f"CRITICAL: You must answer the user's question in the EXACT SAME LANGUAGE they used to ask it. "
-                        f"If the user asks in Arabic, your answer must be in professional legal Arabic. "
-                        f"You must retrieve the answer ONLY and STRICTLY from the provided legal context text database below. "
-                        f"If the specific case or query is not found in the database, reply exactly with: "
-                        f"'هذه الحالة المحددة غير متوفرة حالياً في قاعدة بياناتنا المعتمدة لـ {st.session_state.country}.' (or the equivalent in the user's language)."
+                        f"You are a strict, hyper-focused Legal Expert AI core specialized in national and international laws, currently advising on {st.session_state.country} laws. "
+                        f"CRITICAL RULE 1 (THEME GATEKEEPER): You must ONLY answer legal and law-related questions. If the user's inquiry is NOT related to law, legislation, crimes, contracts, or judicial systems (e.g., general cooking, programming, gossip, pop culture, sports), you must strictly decline to answer. Politely state that you are an AI Legal Intelligence system and cannot step outside the boundaries of legal consultation. "
+                        f"CRITICAL RULE 2 (GLOBAL SCOPE): While your current focus is set to {st.session_state.country} based on user selection, you possess comprehensive expertise in global jurisdictions. Answer inquiries with high-quality formal legal analysis. "
+                        f"CRITICAL RULE 3 (LANGUAGE MATCHING): You must write your professional response in the EXACT SAME LANGUAGE the user used to ask the question. If they ask in Arabic, reply in formal, eloquent legal Arabic."
                     )
                     
-                    # طلب الـ API المباشر لـ OpenAI المدفوع
                     api_url = "https://api.openai.com/v1/chat/completions"
                     headers = {
                         "Authorization": f"Bearer {OPENAI_API_KEY}",
@@ -334,9 +327,9 @@ elif st.session_state.page == "chat":
                         "model": "gpt-4o-mini",
                         "messages": [
                             {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:35000]}\n\nCITIZEN QUESTION:\n{user_query}"}
+                            {"role": "user", "content": f"PROVIDED DATA CONTEXT (IF APPLICABLE):\n{legal_context[:30000]}\n\nUSER LEGAL INQUIRY:\n{user_query}"}
                         ],
-                        "temperature": 0.0
+                        "temperature": 0.2
                     }
                     
                     response = requests.post(api_url, headers=headers, json=payload)
