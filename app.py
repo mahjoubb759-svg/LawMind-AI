@@ -221,7 +221,7 @@ st.markdown("""
 
 # 3. إدارة جلسات الذاكرة المؤقتة للتنقل بمرونة بين الواجهات
 if "page" not in st.session_state: st.session_state.page = "landing"
-if "lang" not in st.session_state: st.session_state.lang = "ar"  # اللغة الافتراضية للهاكاثون
+if "lang" not in st.session_state: st.session_state.lang = "ar"
 if "country" not in st.session_state: st.session_state.country = "Morocco"
 if "chat_history" not in st.session_state: st.session_state.chat_history = []
 
@@ -332,18 +332,21 @@ elif st.session_state.page == "chat":
             st.session_state.chat_history.append({"role": "user", "content": user_query})
             with st.spinner("Analyzing Database..."):
                 try:
-                    # استخدام مسار الموديل المباشر والصحيح لتفادي خطأ الـ 404 نهائياً
+                    # الاعتماد على النموذج الكلاسيكي المستقر لإنهاء مشكلة الـ 404 للأبد
                     model = genai.GenerativeModel(
-                        model_name="models/gemini-1.5-flash",
-                        system_instruction=f"You are a hyper-strict Legal AI Core named 'LawMind | AI Legal Intelligence' specialized in {st.session_state.country} laws. You must answer ONLY and STRICTLY from the provided legal context text below. If the case is not available, reply exactly with: 'This specific case is not available in our verified database for {st.session_state.country}.'"
-                    )
-                    
-                    user_message = f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:40000]}\n\nCITIZEN QUESTION:\n{user_query}"
-                    
-                    response = model.generate_content(
-                        user_message,
+                        model_name="gemini-pro",
                         generation_config={"temperature": 0.0}
                     )
+                    
+                    full_prompt = (
+                        f"You are a hyper-strict Legal AI Core named 'LawMind | AI Legal Intelligence' specialized in {st.session_state.country} laws.\n"
+                        f"You must answer ONLY and STRICTLY from the provided legal context text below. If the case is not available, reply exactly with: "
+                        f"'This specific case is not available in our verified database for {st.session_state.country}.'\n\n"
+                        f"VERIFIED LEGAL TEXT DATABASE:\n{legal_context[:30000]}\n\n"
+                        f"CITIZEN QUESTION:\n{user_query}"
+                    )
+                    
+                    response = model.generate_content(full_prompt)
                     
                     st.session_state.chat_history.append({"role": "assistant", "content": response.text})
                     st.rerun()
