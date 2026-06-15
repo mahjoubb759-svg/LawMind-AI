@@ -109,7 +109,7 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         display: inline-block;
         white-space: nowrap;
-        unicode-bidi: plaintext !important; /* يمنع المتصفح من قلب الترتيب */
+        unicode-bidi: plaintext !important;
     }
     
     .credits-container {
@@ -226,10 +226,10 @@ OPENAI_API_KEY = ""
 if "openai" in st.secrets:
     OPENAI_API_KEY = st.secrets["openai"]["api_key"].strip()
 
-# سطر الـ Credits ثابت دائماً باللغة الإنجليزية
-fixed_credits = "💡 Developed by: <span class='team-names'>Mr. Elmahjoub Boumagout</span> & <span class='team-names'>Mrs. ASMA AHLBIHI</span>"
+# 🛠️ التحديث الجديد: تعديل اللقب التكريمي لـ "أسماء" ليصبح Ms. بدلاً من Mrs. ليعكس الاحترافية والوضع الاجتماعي الصحيح
+fixed_credits = "💡 Developed by: <span class='team-names'>Mr. Elmahjoub Boumagout</span> & <span class='team-names'>Ms. ASMA AHLBIHI</span>"
 
-# نصوص اللغات مع التعديل الجديد للرؤية وضبط نصوص الـ Badge
+# نصوص الرؤية واللغات المتعددة
 locales = {
     "en": {
         "vision_html": "<b>LawMind</b> is the first Moroccan platform that harnesses artificial intelligence to serve humanity in the field of legal consultations.",
@@ -238,11 +238,11 @@ locales = {
     },
     "ar": {
         "vision_html": "هي اول منصة مغربية تسخر الذكاء الاصطناعي لخدمة البشرية في مجال الاستشارات القانونية.",
-        "badge": "منتج مغربي 100% 🇲🇦", # صياغة عربية خالصة تمنع التشوه اللغوي
+        "badge": "منتج مغربي 100% 🇲🇦",
         "select_lang": "حدد اللغة", "select_country": "حدد مكتب الدولة", "btn_enter": "إطلاق الذكاء القانوني", "placeholder": "اطرح سؤالك القانوني الصارم هنا...", "search_btn": "استشارة النظام"
     },
     "fr": {
-        "vision_html": "<b>LawMind</b> est la primera plateforme marocaine qui met l'intelligence artificielle au service de l'humanité dans le domaine des consultations juridiques.",
+        "vision_html": "<b>LawMind</b> est la première plateforme marocaine qui met l'intelligence artificielle au service de l'humanité dans le domaine des consultations juridiques.",
         "badge": "Produit 100% Marocain 🇲🇦",
         "select_lang": "Choisir la Langue", "select_country": "Choisir le Bureau de Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système"
     },
