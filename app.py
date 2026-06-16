@@ -40,7 +40,7 @@ st.markdown("""
         display: block !important;
         width: 100% !important;
         margin: 0 auto 15px auto !important;
-        filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.8));
+        filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.6));
         animation: pulse 2.5s infinite alternate;
     }
     
@@ -147,11 +147,11 @@ st.markdown("""
     }
     
     @keyframes pulse {
-        0% { transform: scale(0.96); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5)); }
-        100% { transform: scale(1.04); filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.9)); }
+        0% { transform: scale(0.96); filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.4)); }
+        100% { transform: scale(1.04); filter: drop-shadow(0 0 25px rgba(250, 204, 21, 0.85)); }
     }
     
-    /* 🛠️ إصلاح شامل وجذري لزر استشارة النظام داخل وخارج الـ Form لضمان الخلفية الملونة وظهور النص */
+    /* إصلاح شامل وجذري لزر استشارة النظام داخل وخارج الـ Form لضمان الخلفية الملونة وظهور النص */
     .stButton, div[data-testid="stFormSubmitButton"] {
         display: flex !important;
         justify-content: center !important;
@@ -265,23 +265,31 @@ current_text = locales[st.session_state.lang]
 
 supported_countries = ["Morocco 🇲🇦", "France 🇫🇷", "USA 🇺🇸", "Saudi Arabia 🇸🇦", "Egypt 🇪🇬", "Spain 🇪🇸", "UAE 🇦🇪"]
 
-# أيقونة الميزان الاحترافية الفخمة بنظام الـ SVG المضيء باللون الذهبي النيون لمنع تشوه الإيموجي القديم
+# 🛠️ إعادة تصميم الميزان هندسياً بالكامل عبر الـ SVG ليكون واضحاً وملكيّاً ومحاكياً لميزان العدالة الأصلي
 scale_svg_html = """
 <div class="logo-svg-container">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="90" height="90" fill="none" stroke="url(#goldGradient)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100" height="100" fill="none" stroke="url(#goldGradient)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
   <defs>
     <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="0%" stop-color="#fef08a" />
       <stop offset="50%" stop-color="#eab308" />
-      <stop offset="100%" stop-color="#ca8a04" />
+      <stop offset="100%" stop-color="#a16207" />
     </linearGradient>
   </defs>
-  <line x1="12" y1="5" x2="12" y2="19" />
-  <line x1="5" y1="19" x2="19" y2="19" />
-  <line x1="6" y1="7" x2="18" y2="7" />
-  <path d="M6 7v2c0 2.5 2 4.5 4.5 4.5S15 11.5 15 9V7" />
-  <path d="M18 7v2c0 2.5-2 4.5-4.5 4.5S9 11.5 9 9V7" />
-  <circle cx="12" cy="4" r="1" fill="url(#goldGradient)" />
+  <line x1="12" y1="3" x2="12" y2="20" />
+  <path d="M9 20h6M7 21h10" />
+  
+  <line x1="4" y1="6" x2="20" y2="6" />
+  
+  <line x1="4" y1="6" x2="1" y2="13" />
+  <line x1="4" y1="6" x2="7" y2="13" />
+  <path d="M1 13c0 2 1.5 3 3 3s3-1 3-3H1z" fill="url(#goldGradient)" fill-opacity="0.1" />
+  
+  <line x1="20" y1="6" x2="17" y2="13" />
+  <line x1="20" y1="6" x2="23" y2="13" />
+  <path d="M17 13c0 2 1.5 3 3 3s3-1 3-3H17z" fill="url(#goldGradient)" fill-opacity="0.1" />
+  
+  <circle cx="12" cy="2" r="0.5" fill="url(#goldGradient)" />
 </svg>
 </div>
 """
