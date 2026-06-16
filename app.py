@@ -34,18 +34,15 @@ st.markdown("""
         color: #f8fafc;
     }
     
-    /* 🛠️ تحديث كلاس اللوجو لجعله بارزاً ومضيئاً باللون الأزرق بشكل فخم */
     .legal-logo {
         text-align: center !important;
         display: block;
-        font-size: 4rem;
+        font-size: 5rem;
         background: linear-gradient(to right, #38bdf8, #818cf8);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin: 0 auto 15px auto;
-        width: fit-content;
-        filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.7)); /* تأثير التوهج والبروز الأزرق */
-        animation: pulse 2.5s infinite alternate;
+        margin-bottom: 0px;
+        animation: pulse 3s infinite alternate;
     }
     
     .main-title {
@@ -151,8 +148,8 @@ st.markdown("""
     }
     
     @keyframes pulse {
-        0% { transform: scale(0.98); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5)); }
-        100% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.9)); }
+        0% { transform: scale(1); opacity: 0.9; }
+        100% { transform: scale(1.05); opacity: 1; }
     }
     
     .stButton {
@@ -252,7 +249,7 @@ locales = {
         "user_label": "Moi"
     },
     "es": {
-        "vision_html": "<b>LawMind</b> es la primera plataforma marroquí que pone la intelligence artificial al servicio de la humanidad en el campo de las consultas jurídicas.",
+        "vision_html": "<b>LawMind</b> es la primera plataforma marroquí que pone la inteligencia artificial al servicio de la humanidad en el campo de las consultas jurídicas.",
         "badge": "Producto 100% Marroquí 🇲🇦",
         "select_lang": "Seleccionar Idioma", "select_country": "Seleccionar Oficina de País", "btn_enter": "Iniciar Inteligencia", "placeholder": "Haga su pregunta legal estricta aquí...", "search_btn": "Consultar Sistema",
         "user_label": "Yo"
@@ -304,8 +301,7 @@ if st.session_state.page == "landing":
     st.markdown(f'<div class="credits-container"><div class="team-credits">{fixed_credits}</div></div>', unsafe_allow_html=True)
 
 elif st.session_state.page == "chat":
-    # تم تفعيل كلاس البروز المضيء هنا أيضاً ليكون متناسقاً في صفحة الشات
-    st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
+    st.markdown('<p class="legal-logo" style="font-size: 3rem;">⚖️</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="main-title" style="font-size: 2.2rem;">LawMind | {st.session_state.country} Bureau</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="sub-title" style="font-size: 0.9rem; margin-bottom: 20px;">AI Legal Intelligence</p>', unsafe_allow_html=True)
 
@@ -323,6 +319,7 @@ elif st.session_state.page == "chat":
     # عرض غرف المحادثة السابقة بشكل متناسق مع اللغة المختارة
     for message in st.session_state.chat_history:
         if message["role"] == "user":
+            # 🛠️ دمج المتغير الديناميكي هنا لقراءة اللفظ الصحيح لكلمة (أنا/Me/Moi...) طبقاً للغة الواجهة
             st.markdown(f'<div class="chat-bubble-user"><b>👤 {current_text["user_label"]}:</b><br>{message["content"]}</div>', unsafe_allow_html=True)
         else:
             st.markdown(f'<div class="chat-bubble-ai"><div class="ai-header">⚖️ LawMind AI Intelligence:</div>{message["content"]}</div>', unsafe_allow_html=True)
