@@ -34,13 +34,20 @@ st.markdown("""
         color: #f8fafc;
     }
     
-    /* مركز الشعار الذهبي المتوهج والمصمم عبر SVG */
-    .logo-svg-container {
+    /* 🛠️ استرجاع الميزان الأول التقليدي مع إبقائه بارزاً، مضيئاً ومتمركزاً في المنتصف تماماً */
+    .legal-logo {
         text-align: center !important;
         display: block !important;
         width: 100% !important;
-        margin: 0 auto 15px auto !important;
-        filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.6));
+        font-size: 5rem !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        margin-top: 0px !important;
+        margin-bottom: 15px !important;
+        background: linear-gradient(to right, #38bdf8, #818cf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.7)); /* تأثير التوهج الأزرق البارز */
         animation: pulse 2.5s infinite alternate;
     }
     
@@ -147,8 +154,8 @@ st.markdown("""
     }
     
     @keyframes pulse {
-        0% { transform: scale(0.96); filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.4)); }
-        100% { transform: scale(1.04); filter: drop-shadow(0 0 25px rgba(250, 204, 21, 0.85)); }
+        0% { transform: scale(0.97); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.4)); }
+        100% { transform: scale(1.03); filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.85)); }
     }
     
     /* إصلاح شامل وجذري لزر استشارة النظام داخل وخارج الـ Form لضمان الخلفية الملونة وظهور النص */
@@ -249,7 +256,7 @@ locales = {
         "user_label": "Moi"
     },
     "es": {
-        "vision_html": "<b>LawMind</b> es la primera plataforma marroquí que pone la inteligencia artificial al servicio de la humanidad en el campo de las consultas jurídicas.",
+        "vision_html": "<b>LawMind</b> es la primera plataforma marroquí que pone la inteligencia artificial al servicio de la humanity en el campo de las consultas jurídicas.",
         "badge": "Producto 100% Marroquí 🇲🇦",
         "select_lang": "Seleccionar Idioma", "select_country": "Seleccionar Oficina de País", "btn_enter": "Iniciar Inteligencia", "placeholder": "Haga su pregunta legal estricta aquí...", "search_btn": "Consultar Sistema",
         "user_label": "Yo"
@@ -265,37 +272,9 @@ current_text = locales[st.session_state.lang]
 
 supported_countries = ["Morocco 🇲🇦", "France 🇫🇷", "USA 🇺🇸", "Saudi Arabia 🇸🇦", "Egypt 🇪🇬", "Spain 🇪🇸", "UAE 🇦🇪"]
 
-# 🛠️ إعادة تصميم الميزان هندسياً بالكامل عبر الـ SVG ليكون واضحاً وملكيّاً ومحاكياً لميزان العدالة الأصلي
-scale_svg_html = """
-<div class="logo-svg-container">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100" height="100" fill="none" stroke="url(#goldGradient)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-  <defs>
-    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fef08a" />
-      <stop offset="50%" stop-color="#eab308" />
-      <stop offset="100%" stop-color="#a16207" />
-    </linearGradient>
-  </defs>
-  <line x1="12" y1="3" x2="12" y2="20" />
-  <path d="M9 20h6M7 21h10" />
-  
-  <line x1="4" y1="6" x2="20" y2="6" />
-  
-  <line x1="4" y1="6" x2="1" y2="13" />
-  <line x1="4" y1="6" x2="7" y2="13" />
-  <path d="M1 13c0 2 1.5 3 3 3s3-1 3-3H1z" fill="url(#goldGradient)" fill-opacity="0.1" />
-  
-  <line x1="20" y1="6" x2="17" y2="13" />
-  <line x1="20" y1="6" x2="23" y2="13" />
-  <path d="M17 13c0 2 1.5 3 3 3s3-1 3-3H17z" fill="url(#goldGradient)" fill-opacity="0.1" />
-  
-  <circle cx="12" cy="2" r="0.5" fill="url(#goldGradient)" />
-</svg>
-</div>
-"""
-
 if st.session_state.page == "landing":
-    st.markdown(scale_svg_html, unsafe_allow_html=True)
+    # عرض الميزان الأول والتقليدي ⚖️ بالتعديل المركزي البارز
+    st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
     st.markdown('<p class="main-title">LawMind</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">AI Legal Intelligence</p>', unsafe_allow_html=True)
     
@@ -330,7 +309,8 @@ if st.session_state.page == "landing":
     st.markdown(f'<div class="credits-container"><div class="team-credits">{fixed_credits}</div></div>', unsafe_allow_html=True)
 
 elif st.session_state.page == "chat":
-    st.markdown(scale_svg_html, unsafe_allow_html=True)
+    # الميزان الأول التقليدي ⚖️ متناسق ومستقر هنا أيضاً
+    st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="main-title" style="font-size: 2.2rem;">LawMind | {st.session_state.country} Bureau</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="sub-title" style="font-size: 0.9rem; margin-bottom: 20px;">AI Legal Intelligence</p>', unsafe_allow_html=True)
 
