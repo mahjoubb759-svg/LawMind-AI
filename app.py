@@ -34,7 +34,7 @@ st.markdown("""
         color: #f8fafc;
     }
     
-    /* 🛠️ استرجاع الميزان الأول التقليدي مع إبقائه بارزاً، مضيئاً ومتمركزاً في المنتصف تماماً */
+    /* 🛠️ إصلاح مشكلة اللون الأزرق: إزالة صبغة النص الشفافة عن الإيموجي ليظهر بألوانه الحقيقية */
     .legal-logo {
         text-align: center !important;
         display: block !important;
@@ -44,10 +44,8 @@ st.markdown("""
         margin-right: auto !important;
         margin-top: 0px !important;
         margin-bottom: 15px !important;
-        background: linear-gradient(to right, #38bdf8, #818cf8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.7)); /* تأثير التوهج الأزرق البارز */
+        /* تم إزالة الخلفية الملونة الشفافة التي كانت تغطي الإيموجي باللون الأزرق */
+        filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.85)); /* الحفاظ على التوهج النيوني الأزرق الفخم */
         animation: pulse 2.5s infinite alternate;
     }
     
@@ -154,8 +152,8 @@ st.markdown("""
     }
     
     @keyframes pulse {
-        0% { transform: scale(0.97); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.4)); }
-        100% { transform: scale(1.03); filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.85)); }
+        0% { transform: scale(0.97); filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.5)); }
+        100% { transform: scale(1.03); filter: drop-shadow(0 0 28px rgba(56, 189, 248, 0.9)); }
     }
     
     /* إصلاح شامل وجذري لزر استشارة النظام داخل وخارج الـ Form لضمان الخلفية الملونة وظهور النص */
@@ -244,7 +242,7 @@ locales = {
         "user_label": "Me"
     },
     "ar": {
-        "vision_html": "هي اول منصة مغربية تسخر الذكاء الاصطناعي لخدمة البشرية في مجال الاستشارات القانونية.",
+        "vision_html": "هي اول منصة مغربية تسخر الذكاء الاصطناعي لخدمة البشرية in مجال الاستشارات القانونية.",
         "badge": "منتج مغربي 100% 🇲🇦",
         "select_lang": "حدد اللغة", "select_country": "حدد مكتب الدولة", "btn_enter": "إطلاق الذكاء القانوني", "placeholder": "اطرح سؤالك القانوني الصارم هنا...", "search_btn": "استشارة النظام",
         "user_label": "أنا"
@@ -256,7 +254,7 @@ locales = {
         "user_label": "Moi"
     },
     "es": {
-        "vision_html": "<b>LawMind</b> es la primera plataforma marroquí que pone la inteligencia artificial al servicio de la humanity en el campo de las consultas jurídicas.",
+        "vision_html": "<b>LawMind</b> es la primera plataforma marroquí que pone la inteligencia artificial al servicio de la humanidad en el campo de las consultas jurídicas.",
         "badge": "Producto 100% Marroquí 🇲🇦",
         "select_lang": "Seleccionar Idioma", "select_country": "Seleccionar Oficina de País", "btn_enter": "Iniciar Inteligencia", "placeholder": "Haga su pregunta legal estricta aquí...", "search_btn": "Consultar Sistema",
         "user_label": "Yo"
@@ -273,7 +271,6 @@ current_text = locales[st.session_state.lang]
 supported_countries = ["Morocco 🇲🇦", "France 🇫🇷", "USA 🇺🇸", "Saudi Arabia 🇸🇦", "Egypt 🇪🇬", "Spain 🇪🇸", "UAE 🇦🇪"]
 
 if st.session_state.page == "landing":
-    # عرض الميزان الأول والتقليدي ⚖️ بالتعديل المركزي البارز
     st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
     st.markdown('<p class="main-title">LawMind</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">AI Legal Intelligence</p>', unsafe_allow_html=True)
@@ -309,7 +306,6 @@ if st.session_state.page == "landing":
     st.markdown(f'<div class="credits-container"><div class="team-credits">{fixed_credits}</div></div>', unsafe_allow_html=True)
 
 elif st.session_state.page == "chat":
-    # الميزان الأول التقليدي ⚖️ متناسق ومستقر هنا أيضاً
     st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="main-title" style="font-size: 2.2rem;">LawMind | {st.session_state.country} Bureau</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="sub-title" style="font-size: 0.9rem; margin-bottom: 20px;">AI Legal Intelligence</p>', unsafe_allow_html=True)
