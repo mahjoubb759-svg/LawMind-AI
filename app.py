@@ -34,15 +34,14 @@ st.markdown("""
         color: #f8fafc;
     }
     
-    .legal-logo {
+    /* مركز الشعار الذهبي المتوهج والمصمم عبر SVG */
+    .logo-svg-container {
         text-align: center !important;
-        display: block;
-        font-size: 5rem;
-        background: linear-gradient(to right, #38bdf8, #818cf8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0px;
-        animation: pulse 3s infinite alternate;
+        display: block !important;
+        width: 100% !important;
+        margin: 0 auto 15px auto !important;
+        filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.8));
+        animation: pulse 2.5s infinite alternate;
     }
     
     .main-title {
@@ -148,34 +147,37 @@ st.markdown("""
     }
     
     @keyframes pulse {
-        0% { transform: scale(1); opacity: 0.9; }
-        100% { transform: scale(1.05); opacity: 1; }
+        0% { transform: scale(0.96); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5)); }
+        100% { transform: scale(1.04); filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.9)); }
     }
     
-    .stButton {
+    /* 🛠️ إصلاح شامل وجذري لزر استشارة النظام داخل وخارج الـ Form لضمان الخلفية الملونة وظهور النص */
+    .stButton, div[data-testid="stFormSubmitButton"] {
         display: flex !important;
         justify-content: center !important;
         width: 100% !important;
-        margin-top: 15px !important;
-        margin-bottom: 15px !important;
+        margin-top: 20px !important;
+        margin-bottom: 20px !important;
     }
-    .stButton>button {
+    .stButton>button, div[data-testid="stFormSubmitButton"]>button {
         background: linear-gradient(90deg, #0284c7 0%, #4f46e5 100%) !important;
-        color: white !important;
+        color: #ffffff !important;
         border: none !important;
         border-radius: 50px !important;
-        padding: 12px 50px !important;
+        padding: 14px 55px !important;
         font-weight: bold !important;
-        font-size: 1.1rem !important;
+        font-size: 1.15rem !important;
         transition: all 0.3s ease !important;
         white-space: nowrap !important;
         width: auto !important;
-        min-width: 250px !important;
-        box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2) !important;
+        min-width: 260px !important;
+        box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3) !important;
     }
-    .stButton>button:hover {
+    .stButton>button:hover, div[data-testid="stFormSubmitButton"]>button:hover {
         transform: scale(1.05) !important;
-        box-shadow: 0 0 25px rgba(56, 189, 248, 0.5) !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 25px rgba(56, 189, 248, 0.6) !important;
+        background: linear-gradient(90deg, #0284c7 0%, #4f46e5 100%) !important;
     }
     
     .chat-bubble-user {
@@ -225,10 +227,8 @@ OPENAI_API_KEY = ""
 if "openai" in st.secrets:
     OPENAI_API_KEY = st.secrets["openai"]["api_key"].strip()
 
-# اللقب التكريمي لـ "أسماء" ليعكس الاحترافية والوضع الاجتماعي الصحيح Ms.
 fixed_credits = "💡 Developed by: <span class='team-names'>Mr. Elmahjoub Boumagout</span> & <span class='team-names'>Ms. ASMA AHLBIHI</span>"
 
-# نصوص الرؤية واللغات المتعددة مع إضافة مفتاح "user_label" المترجم ديناميكياً
 locales = {
     "en": {
         "vision_html": "<b>LawMind</b> is the first Moroccan platform that harnesses artificial intelligence to serve humanity in the field of legal consultations.",
@@ -265,8 +265,29 @@ current_text = locales[st.session_state.lang]
 
 supported_countries = ["Morocco 🇲🇦", "France 🇫🇷", "USA 🇺🇸", "Saudi Arabia 🇸🇦", "Egypt 🇪🇬", "Spain 🇪🇸", "UAE 🇦🇪"]
 
+# أيقونة الميزان الاحترافية الفخمة بنظام الـ SVG المضيء باللون الذهبي النيون لمنع تشوه الإيموجي القديم
+scale_svg_html = """
+<div class="logo-svg-container">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="90" height="90" fill="none" stroke="url(#goldGradient)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="50%" stop-color="#eab308" />
+      <stop offset="100%" stop-color="#ca8a04" />
+    </linearGradient>
+  </defs>
+  <line x1="12" y1="5" x2="12" y2="19" />
+  <line x1="5" y1="19" x2="19" y2="19" />
+  <line x1="6" y1="7" x2="18" y2="7" />
+  <path d="M6 7v2c0 2.5 2 4.5 4.5 4.5S15 11.5 15 9V7" />
+  <path d="M18 7v2c0 2.5-2 4.5-4.5 4.5S9 11.5 9 9V7" />
+  <circle cx="12" cy="4" r="1" fill="url(#goldGradient)" />
+</svg>
+</div>
+"""
+
 if st.session_state.page == "landing":
-    st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
+    st.markdown(scale_svg_html, unsafe_allow_html=True)
     st.markdown('<p class="main-title">LawMind</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">AI Legal Intelligence</p>', unsafe_allow_html=True)
     
@@ -301,7 +322,7 @@ if st.session_state.page == "landing":
     st.markdown(f'<div class="credits-container"><div class="team-credits">{fixed_credits}</div></div>', unsafe_allow_html=True)
 
 elif st.session_state.page == "chat":
-    st.markdown('<p class="legal-logo" style="font-size: 3rem;">⚖️</p>', unsafe_allow_html=True)
+    st.markdown(scale_svg_html, unsafe_allow_html=True)
     st.markdown(f'<p class="main-title" style="font-size: 2.2rem;">LawMind | {st.session_state.country} Bureau</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="sub-title" style="font-size: 0.9rem; margin-bottom: 20px;">AI Legal Intelligence</p>', unsafe_allow_html=True)
 
@@ -316,10 +337,8 @@ elif st.session_state.page == "chat":
 
     legal_context = load_specific_country_law()
 
-    # عرض غرف المحادثة السابقة بشكل متناسق مع اللغة المختارة
     for message in st.session_state.chat_history:
         if message["role"] == "user":
-            # 🛠️ دمج المتغير الديناميكي هنا لقراءة اللفظ الصحيح لكلمة (أنا/Me/Moi...) طبقاً للغة الواجهة
             st.markdown(f'<div class="chat-bubble-user"><b>👤 {current_text["user_label"]}:</b><br>{message["content"]}</div>', unsafe_allow_html=True)
         else:
             st.markdown(f'<div class="chat-bubble-ai"><div class="ai-header">⚖️ LawMind AI Intelligence:</div>{message["content"]}</div>', unsafe_allow_html=True)
@@ -334,7 +353,7 @@ elif st.session_state.page == "chat":
             st.error("⚠️ Configuration Error: OpenAI API Key is missing.")
         else:
             st.session_state.chat_history.append({"role": "user", "content": user_query})
-            with st.spinner("Analyzing Legal Database & Universal Law Knowledge..."):
+            with st.spinner("Analyzing Legal Database..."):
                 try:
                     system_prompt = (
                         f"You are a strict, hyper-focused Legal Expert AI core specialized in international jurisprudence. "
