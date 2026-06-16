@@ -228,31 +228,37 @@ if "openai" in st.secrets:
 # اللقب التكريمي لـ "أسماء" ليعكس الاحترافية والوضع الاجتماعي الصحيح Ms.
 fixed_credits = "💡 Developed by: <span class='team-names'>Mr. Elmahjoub Boumagout</span> & <span class='team-names'>Ms. ASMA AHLBIHI</span>"
 
+# نصوص الرؤية واللغات المتعددة مع إضافة مفتاح "user_label" المترجم ديناميكياً
 locales = {
     "en": {
         "vision_html": "<b>LawMind</b> is the first Moroccan platform that harnesses artificial intelligence to serve humanity in the field of legal consultations.",
         "badge": "100% Moroccan Product 🇲🇦",
-        "select_lang": "Select Language", "select_country": "Select Country Office", "btn_enter": "Launch Intelligence", "placeholder": "Ask your strict legal question here...", "search_btn": "Consult System"
+        "select_lang": "Select Language", "select_country": "Select Country Office", "btn_enter": "Launch Intelligence", "placeholder": "Ask your strict legal question here...", "search_btn": "Consult System",
+        "user_label": "Me"
     },
     "ar": {
         "vision_html": "هي اول منصة مغربية تسخر الذكاء الاصطناعي لخدمة البشرية في مجال الاستشارات القانونية.",
         "badge": "منتج مغربي 100% 🇲🇦",
-        "select_lang": "حدد اللغة", "select_country": "حدد مكتب الدولة", "btn_enter": "إطلاق الذكاء القانوني", "placeholder": "اطرح سؤالك القانوني الصارم هنا...", "search_btn": "استشارة النظام"
+        "select_lang": "حدد اللغة", "select_country": "حدد مكتب الدولة", "btn_enter": "إطلاق الذكاء القانوني", "placeholder": "اطرح سؤالك القانوني الصارم هنا...", "search_btn": "استشارة النظام",
+        "user_label": "أنا"
     },
     "fr": {
         "vision_html": "<b>LawMind</b> est la première plateforme marocaine qui met l'intelligence artificielle au service de l'humanité dans le domaine des consultations juridiques.",
         "badge": "Produit 100% Marocain 🇲🇦",
-        "select_lang": "Choisir la Langue", "select_country": "Choisir le Bureau de Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système"
+        "select_lang": "Choisir la Langue", "select_country": "Choisir le Bureau de Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système",
+        "user_label": "Moi"
     },
     "es": {
         "vision_html": "<b>LawMind</b> es la primera plataforma marroquí que pone la inteligencia artificial al servicio de la humanidad en el campo de las consultas jurídicas.",
         "badge": "Producto 100% Marroquí 🇲🇦",
-        "select_lang": "Seleccionar Idioma", "select_country": "Seleccionar Oficina de País", "btn_enter": "Iniciar Inteligencia", "placeholder": "Haga su pregunta legal estricta aquí...", "search_btn": "Consultar Sistema"
+        "select_lang": "Seleccionar Idioma", "select_country": "Seleccionar Oficina de País", "btn_enter": "Iniciar Inteligencia", "placeholder": "Haga su pregunta legal estricta aquí...", "search_btn": "Consultar Sistema",
+        "user_label": "Yo"
     },
     "de": {
         "vision_html": "<b>LawMind</b> ist die erste marokkanische Plattform, die künstliche Intelligenz im Dienste der Menschheit im Bereich der Rechtsberatung einsetzt.",
         "badge": "100% Marokkanisches Produkt 🇲🇦",
-        "select_lang": "Sprache auswählen", "select_country": "Länderbüro auswählen", "btn_enter": "Intelligenz starten", "placeholder": "Stellen Sie hier Ihre strenge Rechtsfrage...", "search_btn": "System konsultieren"
+        "select_lang": "Sprache auswählen", "select_country": "Länderbüro auswählen", "btn_enter": "Intelligenz starten", "placeholder": "Stellen Sie hier Ihre strenge Rechtsfrage...", "search_btn": "System konsultieren",
+        "user_label": "Ich"
     }
 }
 current_text = locales[st.session_state.lang]
@@ -295,7 +301,6 @@ if st.session_state.page == "landing":
     st.markdown(f'<div class="credits-container"><div class="team-credits">{fixed_credits}</div></div>', unsafe_allow_html=True)
 
 elif st.session_state.page == "chat":
-    # 🛠️ تعديل اللوجو العلوية لشكل الميزان القانوني المستقر ⚖️ بدلاً من الرمز القديم المشوه
     st.markdown('<p class="legal-logo" style="font-size: 3rem;">⚖️</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="main-title" style="font-size: 2.2rem;">LawMind | {st.session_state.country} Bureau</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="sub-title" style="font-size: 0.9rem; margin-bottom: 20px;">AI Legal Intelligence</p>', unsafe_allow_html=True)
@@ -311,11 +316,11 @@ elif st.session_state.page == "chat":
 
     legal_context = load_specific_country_law()
 
-    # عرض غرف المحادثة السابقة
+    # عرض غرف المحادثة السابقة بشكل متناسق مع اللغة المختارة
     for message in st.session_state.chat_history:
         if message["role"] == "user":
-            # 🛠️ التعديل المطلوب: استبدال "المستشار" بـ "أنا" ليكون السياق تفاعلياً وصحيحاً لغوياً للمستخدم
-            st.markdown(f'<div class="chat-bubble-user"><b>👤 أنا:</b><br>{message["content"]}</div>', unsafe_allow_html=True)
+            # 🛠️ دمج المتغير الديناميكي هنا لقراءة اللفظ الصحيح لكلمة (أنا/Me/Moi...) طبقاً للغة الواجهة
+            st.markdown(f'<div class="chat-bubble-user"><b>👤 {current_text["user_label"]}:</b><br>{message["content"]}</div>', unsafe_allow_html=True)
         else:
             st.markdown(f'<div class="chat-bubble-ai"><div class="ai-header">⚖️ LawMind AI Intelligence:</div>{message["content"]}</div>', unsafe_allow_html=True)
 
