@@ -97,7 +97,6 @@ st.markdown("""
         clear: both;
     }
     
-    /* إصلاح جذري ومقاوم لتشوه نصوص الـ Badge العربية */
     .moroccan-badge {
         text-align: center !important;
         color: #065F46 !important;
@@ -226,10 +225,9 @@ OPENAI_API_KEY = ""
 if "openai" in st.secrets:
     OPENAI_API_KEY = st.secrets["openai"]["api_key"].strip()
 
-# 🛠️ التحديث الجديد: تعديل اللقب التكريمي لـ "أسماء" ليصبح Ms. بدلاً من Mrs. ليعكس الاحترافية والوضع الاجتماعي الصحيح
+# اللقب التكريمي لـ "أسماء" ليعكس الاحترافية والوضع الاجتماعي الصحيح Ms.
 fixed_credits = "💡 Developed by: <span class='team-names'>Mr. Elmahjoub Boumagout</span> & <span class='team-names'>Ms. ASMA AHLBIHI</span>"
 
-# نصوص الرؤية واللغات المتعددة
 locales = {
     "en": {
         "vision_html": "<b>LawMind</b> is the first Moroccan platform that harnesses artificial intelligence to serve humanity in the field of legal consultations.",
@@ -297,6 +295,7 @@ if st.session_state.page == "landing":
     st.markdown(f'<div class="credits-container"><div class="team-credits">{fixed_credits}</div></div>', unsafe_allow_html=True)
 
 elif st.session_state.page == "chat":
+    # 🛠️ تعديل اللوجو العلوية لشكل الميزان القانوني المستقر ⚖️ بدلاً من الرمز القديم المشوه
     st.markdown('<p class="legal-logo" style="font-size: 3rem;">⚖️</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="main-title" style="font-size: 2.2rem;">LawMind | {st.session_state.country} Bureau</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="sub-title" style="font-size: 0.9rem; margin-bottom: 20px;">AI Legal Intelligence</p>', unsafe_allow_html=True)
@@ -312,9 +311,11 @@ elif st.session_state.page == "chat":
 
     legal_context = load_specific_country_law()
 
+    # عرض غرف المحادثة السابقة
     for message in st.session_state.chat_history:
         if message["role"] == "user":
-            st.markdown(f'<div class="chat-bubble-user"><b>👤 المستشار:</b><br>{message["content"]}</div>', unsafe_allow_html=True)
+            # 🛠️ التعديل المطلوب: استبدال "المستشار" بـ "أنا" ليكون السياق تفاعلياً وصحيحاً لغوياً للمستخدم
+            st.markdown(f'<div class="chat-bubble-user"><b>👤 أنا:</b><br>{message["content"]}</div>', unsafe_allow_html=True)
         else:
             st.markdown(f'<div class="chat-bubble-ai"><div class="ai-header">⚖️ LawMind AI Intelligence:</div>{message["content"]}</div>', unsafe_allow_html=True)
 
