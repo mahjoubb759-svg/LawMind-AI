@@ -34,7 +34,7 @@ st.markdown("""
     .badge-container { display: flex; justify-content: center; align-items: center; width: 100%; margin-bottom: 25px; }
     .moroccan-badge { text-align: center !important; color: #065F46 !important; font-size: 0.95rem; font-weight: bold; background-color: #D1FAE5; padding: 8px 24px; border-radius: 50px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: inline-block; white-space: nowrap; unicode-bidi: plaintext !important; }
     
-    /* 🌟 تصميم الحاوية التفاعلية المركزية لـ ساكنة طانطان ونظام التحقق المتكامل */
+    /* تصميم الحاوية التفاعلية المركزية لـ ساكنة طانطان ونظام التحقق المتكامل */
     .interactive-tantan-card {
         background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
         border: 2px solid rgba(234, 179, 8, 0.4);
@@ -42,10 +42,10 @@ st.markdown("""
         padding: 30px;
         text-align: center;
         max-width: 750px;
-        margin: 35px auto;
+        margin: 25px auto 15px auto;
         box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 20px rgba(234, 179, 8, 0.1);
     }
-    .tantan-title { color: #eab308 !important; font-size: 1.5rem !important; font-weight: 800 !important; margin-bottom: 12px; letter-spacing: 1px; }
+    .tantan-title { color: #eab308 !important; font-size: 1.4rem !important; font-weight: 800 !important; margin-bottom: 12px; letter-spacing: 1px; }
     .tantan-desc { color: #e2e8f0 !important; font-size: 1.1rem; line-height: 1.7; margin-bottom: 20px; }
     .tantan-input-label { font-weight: bold; color: #38bdf8; margin-top: 15px; margin-bottom: 8px; font-size: 1rem; display: block; }
     
@@ -80,6 +80,8 @@ st.markdown("""
     .footer-col h4 { color: #38bdf8; font-size: 1.1rem; margin-bottom: 12px; font-weight: 600; border-bottom: 2px solid rgba(56, 189, 248, 0.2); padding-bottom: 5px; width: fit-content; }
     .footer-col p { color: #94a3b8; font-size: 0.95rem; line-height: 1.6; }
     .footer-bottom { text-align: center; margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(148, 163, 184, 0.08); color: #64748b; font-size: 0.85rem; }
+    
+    .verification-wrapper { max-width: 550px; margin: 0 auto; text-align: center; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -93,15 +95,15 @@ OPENAI_API_KEY = st.secrets["openai"]["api_key"].strip() if "openai" in st.secre
 
 fixed_credits = "💡 Developed by: <span class='team-names'>Mr. Elmahjoub Boumagout</span> & <span class='team-names'>Ms. ASMA AHLBIHI</span>"
 
-# حزم النصوص المترجمة بالكامل ديناميكياً لتشمل خانة الفوتر والبطاقة التفاعلية المركزية لطانطان
+# حزم النصوص المترجمة بالكامل ديناميكياً مع الـ placeholder المتغير باحترافية تامة لجميع اللغات
 locales = {
     "en": {
         "vision_html": "<b>LawMind</b> is the first Moroccan platform that harnesses artificial intelligence to serve humanity in the field of legal consultations.",
         "badge": "100% Moroccan Product 🇲🇦", "select_lang": "Select Language", "select_country": "Select Country Office", "btn_enter": "Launch Intelligence", "placeholder": "Ask your strict legal question here...", "search_btn": "Consult System", "user_label": "Me", "back_btn": "⬅ Back",
         "tt_title": "☀️ Tan-Tan Province Exclusive Initiative", 
-        "tt_desc": "Residents of Tan-Tan province benefit from full and free 100% access to the legal advisor service in Morocco. Please verify your eligibility inside this panel.", 
+        "tt_desc": "Residents of Tan-Tan province benefit from full and free 100% access to the legal advisor service in Morocco.", 
         "tt_label": "Verify Free Access Eligibility (Enter CNIE / ID Card Number):", 
-        "tt_placeholder": "e.g. JF12345", 
+        "tt_placeholder": "Enter National ID Card Number...", 
         "tt_success": "🎉 Congratulations! Your card starts with JF. You are fully eligible for free access.", 
         "tt_fail": "❌ Sorry, this card number is not eligible for this exclusive local initiative.",
         "footer_goals_title": "🎯 Our Goals", "footer_goals_desc": "Harnessing advanced artificial intelligence technologies to serve humanity, facilitate access to strict legal information, and support digital legal innovation in line with international standards.", "footer_addr_title": "📍 Registered Headquarters", "footer_addr_desc": "No. 11, Al-Alawiyyin Street, Administrative District, Tan-Tan, Kingdom of Morocco."
@@ -110,9 +112,9 @@ locales = {
         "vision_html": "هي اول منصة مغربية تسخر الذكاء الاصطناعي لخدمة البشرية في مجال الاستشارات القانونية.",
         "badge": "منتج مغربي 100% 🇲🇦", "select_lang": "حدد اللغة", "select_country": "حدد مكتب الدولة", "btn_enter": "إطلاق الذكاء القانوني", "placeholder": "اطرح سؤالك القانوني الصارم هنا...", "search_btn": "استشارة النظام", "user_label": "أنا", "back_btn": "⬅ رجوع",
         "tt_title": "☀️ مبادرة إقليم طانطان الحصرية", 
-        "tt_desc": "يستفيد سكان إقليم طانطان من ولوج كامل ومجاني بنسبة 100% إلى خدمات المستشار القانوني في المغرب. يرجى التحقق من أهليتك داخل هذه الخانة.", 
+        "tt_desc": "يستفيد سكان إقليم طانطان من ولوج كامل ومجاني بنسبة 100% إلى خدمات المستشار القانوني في المغرب.", 
         "tt_label": "التحقق من الأهلية المجانية (أدخل رقم بطاقة التعريف الوطنية):", 
-        "tt_placeholder": "مثال: JF12345", 
+        "tt_placeholder": "أدخل رقم بطاقة التعريف الوطنية...", 
         "tt_success": "🎉 تهانينا! بطاقتك تبدأ بـ JF. أنت مؤهل للاستفادة الكاملة والمجانية من النظام.", 
         "tt_fail": "❌ عذراً، رقم هذه البطاقة غير مؤهل للاستفادة من هذه المبادرة المحلية الحصرية.",
         "footer_goals_title": "🎯 أهدافنا", "footer_goals_desc": "تسخير تقنيات الذكاء الاصطناعي المتقدمة لخدمة البشرية وتسهيل الولوج إلى المعلومة القانونية الصارمة، ودعم ريادة الأعمال والابتكار القانوني الرقمي بما يتماشى مع المعايير الدولية المعاصرة.", "footer_addr_title": "📍 العنوان الاجتماعي", "footer_addr_desc": "رقم 11، زنقة العلويين، الحي الإداري، طانطان، المملكة المغربية."
@@ -121,9 +123,9 @@ locales = {
         "vision_html": "<b>LawMind</b> est la première plateforme marocaine qui met l'intelligence artificielle au service de l'humanité dans le domaine des consultations juridiques.",
         "badge": "Produit 100% Marocain 🇲🇦", "select_lang": "Choisir la Langue", "select_country": "Choisir le Bureau de Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système", "user_label": "Moi", "back_btn": "⬅ Retour",
         "tt_title": "☀️ Initiative Exclusive de la Province de Tan-Tan", 
-        "tt_desc": "Les habitants de la province de Tan-Tan bénéficient d'un accès complet et gratuit au conseiller juridique au Maroc. Veuillez vérifier votre éligibilité.", 
+        "tt_desc": "Les habitants de la province de Tan-Tan bénéficient d'un accès complet et gratuit au conseiller juridique au Maroc.", 
         "tt_label": "Vérifier l'éligibilité gratuite (Entrez le numéro de CNIE / Carte ID) :", 
-        "tt_placeholder": "ex: JF12345", 
+        "tt_placeholder": "Entrez le numéro de carte d'identité nationale...", 
         "tt_success": "🎉 Félicitations ! Votre carte commence par JF. Vous êtes éligible pour un accès gratuit.", 
         "tt_fail": "❌ Désolé, ce numéro de carte n'est pas éligible pour cette initiative locale.",
         "footer_goals_title": "🎯 Nos Objectifs", "footer_goals_desc": "Exploiter les technologies d'intelligence artificielle pour servir l'humanité, faciliter l'accès à l'information juridique stricte et soutenir l'innovation juridique numérique.", "footer_addr_title": "📍 Siège Social", "footer_addr_desc": "N° 11, Rue Al-Alawiyyin, Quartier Administratif, Tan-Tan, Royaume du Maroc."
@@ -132,9 +134,9 @@ locales = {
         "vision_html": "<b>LawMind</b> es la primera plataforma marroquí que pone la inteligencia artificial al servicio de la humanity en el campo de las consultas jurídicas.",
         "badge": "Producto 100% Marroquí 🇲🇦", "select_lang": "Seleccionar Idioma", "select_country": "Seleccionar Oficina de País", "btn_enter": "Iniciar Inteligencia", "placeholder": "Haga su pregunta legal estricta aquí...", "search_btn": "Consultar Sistema", "user_label": "Yo", "back_btn": "⬅ Volver",
         "tt_title": "☀️ Iniciativa Exclusiva de la Provincia de Tan-Tan", 
-        "tt_desc": "Los residentes de la provincia de Tan-Tan se benefician de un acceso total y gratuito al asesor legal en Marruecos. Verifique su elegibilidad.", 
+        "tt_desc": "Los residentes de la provincia de Tan-Tan se benefician de un acceso total y gratuito al asesor legal en Marruecos.", 
         "tt_label": "Verificar elegibilidad gratuita (Ingrese el número de tarjeta CNIE / ID):", 
-        "tt_placeholder": "ej: JF12345", 
+        "tt_placeholder": "Ingrese el número de la tarjeta nacional de identidad...", 
         "tt_success": "🎉 ¡Felicitaciones! Su tarjeta comienza con JF. Eres elegible para acceso gratuito.", 
         "tt_fail": "❌ Lo sentimos, este número de tarjeta no es elegible para esta iniciativa.",
         "footer_goals_title": "🎯 Nuestros Objetivos", "footer_goals_desc": "Aprovechar la inteligencia artificial avanzada para servir a la humanidad, facilitar el acceso a información jurídica estricta y apoyar la innovación legal digital.", "footer_addr_title": "📍 Domicilio Social", "footer_addr_desc": "Nº 11, Calle Al-Alawiyyin, Distrito Administrativo, Tan-Tan, Reino de Marruecos."
@@ -143,9 +145,9 @@ locales = {
         "vision_html": "<b>LawMind</b> ist die erste marokkanische Plattform, die künstliche Intelligenz im Dienste der Menschheit im Bereich der Rechtsberatung einsetzt.",
         "badge": "100% Marokkanisches Produkt 🇲🇦", "select_lang": "Sprache auswählen", "select_country": "Länderbüro auswählen", "btn_enter": "Intelligenz starten", "placeholder": "Stellen Sie hier Ihre strenge Rechtsfrage...", "search_btn": "System konsultieren", "user_label": "Ich", "back_btn": "⬅ Zurück",
         "tt_title": "☀️ Exklusive Initiative der Provinz Tan-Tan", 
-        "tt_desc": "Einwohner der Provinz Tan-Tan profitieren von einem vollständigen und kostenlosen Zugang zum Rechtsberater in Marokko. Bitte prüfen Sie Ihre Berechtigung.", 
+        "tt_desc": "Einwohner der Provinz Tan-Tan profitieren von einem vollständigen und kostenlosen Zugang zum Rechtsberater in Marokko.", 
         "tt_label": "Kostenlose Berechtigung prüfen (Geben Sie die CNIE / ID-Kartennummer ein):", 
-        "tt_placeholder": "z.B. JF12345", 
+        "tt_placeholder": "Geben Sie die Nummer des Personalausweises ein...", 
         "tt_success": "🎉 Herzlichen Glückwunsch! Ihre Karte beginnt mit JF. Sie sind für den kostenlosen Zugriff berechtigt.", 
         "tt_fail": "❌ Leider ist diese Kartennummer für diese exklusive lokale Initiative nicht berechtigt.",
         "footer_goals_title": "🎯 Unsere Ziele", "footer_goals_desc": "Nutzung fortschrittlicher künstlicher Intelligenz, um der Menschheit zu dienen, den Zugang zu rechtlichen Informationen zu erleichtern und digitale juristische Innovationen zu unterstützen.",
@@ -164,7 +166,7 @@ if st.session_state.page == "landing":
     st.markdown(f'<div class="vision-container"><p class="vision-text">{current_text["vision_html"]}</p></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="badge-container"><span class="moroccan-badge">{current_text["badge"]}</span></div>', unsafe_allow_html=True)
     
-    # 🗂️ صناديق خيارات اللغة والدول العليا
+    # صناديق خيارات اللغة والدول العليا
     col1, col2 = st.columns(2)
     with col1:
         st.markdown(f'<div class="selection-box"><h3>🌐 {current_text["select_lang"]}</h3>', unsafe_allow_html=True)
@@ -180,7 +182,7 @@ if st.session_state.page == "landing":
         st.session_state.country = selected_country_ui.split()[0]
         st.markdown('</div>', unsafe_allow_html=True)
         
-    # 🌟 الإصلاح المطلوب والمثالي: وضع "الخانة والبطاقة التفاعلية الحصرية بالوسط أسفل الخانتين مباشرةً"
+    # 🌟 الكود النظيف والموحد: لوحة مبادرة طانطان الحصرية المدمج داخلها حقل التحقق بالوسط تماماً أسفل الخانتين
     st.markdown(f"""
         <div class="interactive-tantan-card">
             <div class="tantan-title">{current_text["tt_title"]}</div>
@@ -189,14 +191,17 @@ if st.session_state.page == "landing":
         </div>
     """, unsafe_allow_html=True)
     
-    # حقل الإدخال تفاعلي مدمج ومتناسق لغوياً وهندسيّاً بالوسط تماماً
-    cnie_input = st.text_input("CNIE Verification Input", placeholder=current_text["tt_placeholder"], label_visibility="collapsed", key="cnie_checker_central").strip()
-    
-    if cnie_input:
-        if cnie_input.upper().startswith("JF"):
-            st.success(current_text["tt_success"])
-        else:
-            st.error(current_text["tt_fail"])
+    # حقل الإدخال تفاعلي ومترجم ديناميكياً بدون كلمة "مثال" الزائدة
+    with st.container():
+        st.markdown('<div class="verification-wrapper">', unsafe_allow_html=True)
+        cnie_input = st.text_input("CNIE Verification Input", placeholder=current_text["tt_placeholder"], label_visibility="collapsed", key="cnie_checker_central").strip()
+        
+        if cnie_input:
+            if cnie_input.upper().startswith("JF"):
+                st.success(current_text["tt_success"])
+            else:
+                st.error(current_text["tt_fail"])
+        st.markdown('</div>', unsafe_allow_html=True)
             
     # زر الدخول يظهر مباشرة أسفل لوحة التحكم والتحقق بالمنتصف
     if st.button(current_text["btn_enter"]):
