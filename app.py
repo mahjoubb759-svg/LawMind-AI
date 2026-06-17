@@ -4,14 +4,14 @@ import requests
 # 1. إعدادات الصفحة الأساسية
 st.set_page_config(page_title="LawMind | AI Legal Intelligence", page_icon="⚖️", layout="wide")
 
-# 2. تصميم الـ Frontend النظيف والمطور
+# 2. تصميم الـ Frontend الاحترافي المطور والمقاوم لتداخل النصوص
 st.markdown("""
     <style>
     [data-testid="stSidebar"], [data-testid="stSidebarCollapseButton"] { display: none !important; }
     #MainMenu, footer, header, [data-testid="stDecoration"] { visibility: hidden !important; display: none !important; }
     div[class^="viewerBadge"], [data-testid="stViewerBadge"] { display: none !important; visibility: hidden !important; }
     
-    .block-container { padding-top: 2rem !important; padding-bottom: 3rem !important; max-width: 1000px !important; margin: 0 auto !important; }
+    .block-container { padding-top: 2rem !important; padding-bottom: 1rem !important; max-width: 1000px !important; margin: 0 auto !important; }
     .stApp { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #f8fafc; }
     
     /* شعار الميزان الأصلي مع التوهج الأزرق النيوني والحركة التفاعلية المستقرة */
@@ -34,7 +34,7 @@ st.markdown("""
     .badge-container { display: flex; justify-content: center; align-items: center; width: 100%; margin-bottom: 35px; }
     .moroccan-badge { text-align: center !important; color: #065F46 !important; font-size: 0.95rem; font-weight: bold; background-color: #D1FAE5; padding: 8px 24px; border-radius: 50px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: inline-block; white-space: nowrap; unicode-bidi: plaintext !important; }
     
-    .credits-container { display: flex; justify-content: center; width: 100%; margin-top: 50px; }
+    .credits-container { display: flex; justify-content: center; width: 100%; margin-top: 30px; margin-bottom: 20px; }
     .team-credits { text-align: center !important; padding: 15px 30px; background: rgba(30, 41, 59, 0.4); border-radius: 15px; border: 1px solid rgba(148, 163, 184, 0.05); font-size: 1rem; color: #e2e8f0; }
     .team-names { color: #38bdf8; font-weight: bold; }
     
@@ -51,10 +51,57 @@ st.markdown("""
     .stButton>button, div[data-testid="stFormSubmitButton"]>button { background: linear-gradient(90deg, #0284c7 0%, #4f46e5 100%) !important; color: #ffffff !important; border: none !important; border-radius: 50px !important; padding: 14px 55px !important; font-weight: bold !important; font-size: 1.15rem !important; transition: all 0.3s ease !important; white-space: nowrap !important; min-width: 260px; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3) !important; }
     .stButton>button:hover, div[data-testid="stFormSubmitButton"]>button:hover { transform: scale(1.05) !important; color: #ffffff !important; box-shadow: 0 0 25px rgba(56, 189, 248, 0.6) !important; background: linear-gradient(90deg, #0284c7 0%, #4f46e5 100%) !important; }
     
+    /* تخصيص فريد لزر الرجوع ليميزه عن الأزرار الرئيسية */
+    .back-btn-container { display: flex !important; justify-content: flex-start !important; width: 100% !important; margin-bottom: -20px; }
+    .back-btn-container button { background: rgba(148, 163, 184, 0.1) !important; color: #94a3b8 !important; border: 1px solid rgba(148, 163, 184, 0.2) !important; border-radius: 12px !important; padding: 6px 18px !important; font-size: 0.9rem !important; min-width: auto !important; box-shadow: none !important; }
+    .back-btn-container button:hover { background: rgba(239, 68, 68, 0.2) !important; color: #f87171 !important; border-color: #f87171 !important; transform: translateX(-3px) !important; }
+
     .chat-bubble-user { background-color: #1e293b; padding: 15px 20px; border-radius: 20px 20px 0px 20px; margin-bottom: 20px; border: 1px solid rgba(56, 189, 248, 0.2); max-width: 85%; margin-left: auto; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     .chat-bubble-ai { background-color: #0f172a; padding: 22px; border-radius: 20px 20px 20px 0px; margin-bottom: 20px; border: 1px solid rgba(129, 140, 248, 0.3); max-width: 85%; font-size: 1.1rem; line-height: 1.8; color: #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
     .ai-header { color: #818cf8; font-weight: bold; margin-bottom: 8px; }
-    .footer-custom { text-align: center; margin-top: 50px; color: #64748b; font-size: 0.85rem; }
+    
+    /* 🌐 تصميم خانة الفوتر الاحترافية والمقسمة بشكل متناسق الهوية */
+    .footer-panel {
+        background: rgba(15, 23, 42, 0.6);
+        border-top: 1px solid rgba(56, 189, 248, 0.15);
+        padding: 30px 20px 15px 20px;
+        margin-top: 60px;
+        border-radius: 24px 24px 0 0;
+    }
+    .footer-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        max-width: 1000px;
+        margin: 0 auto;
+        gap: 20px;
+    }
+    .footer-col {
+        flex: 1;
+        min-width: 250px;
+    }
+    .footer-col h4 {
+        color: #38bdf8;
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+        font-weight: 600;
+        border-bottom: 2px solid rgba(56, 189, 248, 0.2);
+        padding-bottom: 5px;
+        width: fit-content;
+    }
+    .footer-col p {
+        color: #94a3b8;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    .footer-bottom {
+        text-align: center;
+        margin-top: 25px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(148, 163, 184, 0.08);
+        color: #64748b;
+        font-size: 0.85rem;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -71,23 +118,23 @@ fixed_credits = "💡 Developed by: <span class='team-names'>Mr. Elmahjoub Bouma
 locales = {
     "en": {
         "vision_html": "<b>LawMind</b> is the first Moroccan platform that harnesses artificial intelligence to serve humanity in the field of legal consultations.",
-        "badge": "100% Moroccan Product 🇲🇦", "select_lang": "Select Language", "select_country": "Select Country Office", "btn_enter": "Launch Intelligence", "placeholder": "Ask your strict legal question here...", "search_btn": "Consult System", "user_label": "Me"
+        "badge": "100% Moroccan Product 🇲🇦", "select_lang": "Select Language", "select_country": "Select Country Office", "btn_enter": "Launch Intelligence", "placeholder": "Ask your strict legal question here...", "search_btn": "Consult System", "user_label": "Me", "back_btn": "⬅ Back"
     },
     "ar": {
         "vision_html": "هي اول منصة مغربية تسخر الذكاء الاصطناعي لخدمة البشرية في مجال الاستشارات القانونية.",
-        "badge": "منتج مغربي 100% 🇲🇦", "select_lang": "حدد اللغة", "select_country": "حدد مكتب الدولة", "btn_enter": "إطلاق الذكاء القانوني", "placeholder": "اطرح سؤالك القانوني الصارم هنا...", "search_btn": "استشارة النظام", "user_label": "أنا"
+        "badge": "منتج مغربي 100% 🇲🇦", "select_lang": "حدد اللغة", "select_country": "حدد مكتب الدولة", "btn_enter": "إطلاق الذكاء القانوني", "placeholder": "اطرح سؤالك القانوني الصارم هنا...", "search_btn": "استشارة النظام", "user_label": "أنا", "back_btn": "⬅ رجوع"
     },
     "fr": {
         "vision_html": "<b>LawMind</b> est la première plateforme marocaine qui met l'intelligence artificielle au service de l'humanité dans le domaine des consultations juridiques.",
-        "badge": "Produit 100% Marocain 🇲🇦", "select_lang": "Choisir la Langue", "select_country": "Choisir le Bureau de Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système", "user_label": "Moi"
+        "badge": "Produit 100% Marocain 🇲🇦", "select_lang": "Choisir la Langue", "select_country": "Choisir le Bureau de Pays", "btn_enter": "Lancer l'Intelligence", "placeholder": "Posez votre question juridique stricte ici...", "search_btn": "Consulter le Système", "user_label": "Moi", "back_btn": "⬅ Retour"
     },
     "es": {
-        "vision_html": "<b>LawMind</b> es la primera plataforma marroquí que pone la inteligencia artificial al servicio de la humanidad en el campo de las consultas jurídicas.",
-        "badge": "Producto 100% Marroquí 🇲🇦", "select_lang": "Seleccionar Idioma", "select_country": "Seleccionar Oficina de País", "btn_enter": "Iniciar Inteligencia", "placeholder": "Haga su pregunta legal estricta aquí...", "search_btn": "Consultar Sistema", "user_label": "Yo"
+        "vision_html": "<b>LawMind</b> es la primera plataforma marroquí que pone la inteligencia artificial al servicio de la humanity en el campo de las consultas jurídicas.",
+        "badge": "Producto 100% Marroquí 🇲🇦", "select_lang": "Seleccionar Idioma", "select_country": "Seleccionar Oficina de País", "btn_enter": "Iniciar Inteligencia", "placeholder": "Haga su pregunta legal estricta aquí...", "search_btn": "Consultar Sistema", "user_label": "Yo", "back_btn": "⬅ Volver"
     },
     "de": {
         "vision_html": "<b>LawMind</b> ist die erste marokkanische Plattform, die künstliche Intelligenz im Dienste der Menschheit im Bereich der Rechtsberatung einsetzt.",
-        "badge": "100% Marokkanisches Produkt 🇲🇦", "select_lang": "Sprache auswählen", "select_country": "Länderbüro auswählen", "btn_enter": "Intelligenz starten", "placeholder": "Stellen Sie hier Ihre strenge Rechtsfrage...", "search_btn": "System konsultieren", "user_label": "Ich"
+        "badge": "100% Marokkanisches Produkt 🇲🇦", "select_lang": "Sprache auswählen", "select_country": "Länderbüro auswählen", "btn_enter": "Intelligenz starten", "placeholder": "Stellen Sie hier Ihre strenge Rechtsfrage...", "search_btn": "System konsultieren", "user_label": "Ich", "back_btn": "⬅ Zurück"
     }
 }
 current_text = locales[st.session_state.lang]
@@ -125,11 +172,18 @@ if st.session_state.page == "landing":
 
 # --- واجهة نظام الشات والاستشارة (Chat Page) ---
 elif st.session_state.page == "chat":
+    # 🛠️ إضافة حاوية مخصصة لزر الرجوع في أعلى اليسار/اليمين بأسلوب ناعم
+    st.markdown('<div class="back-btn-container">', unsafe_allow_html=True)
+    if st.button(current_text["back_btn"]):
+        st.session_state.page = "landing"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
     st.markdown('<p class="legal-logo">⚖️</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="main-title" style="font-size: 2.2rem;">LawMind | {st.session_state.country} Bureau</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="sub-title" style="font-size: 0.9rem; margin-bottom: 20px;">AI Legal Intelligence</p>', unsafe_allow_html=True)
 
-    # عرض تاريخ استشارات الجلسة المباشرة بالتنظيم اللغوي الديناميكي
+    # عرض تاريخ استشارات الجلسة المباشرة
     for message in st.session_state.chat_history:
         if message["role"] == "user":
             st.markdown(f'<div class="chat-bubble-user"><b>👤 {current_text["user_label"]}:</b><br>{message["content"]}</div>', unsafe_allow_html=True)
@@ -174,4 +228,22 @@ elif st.session_state.page == "chat":
                 except Exception as e:
                     st.error(f"System Error: {str(e)}")
 
-st.markdown('<p class="footer-custom">LawMind | AI Legal Intelligence • Powered by Moroccan Innovation 🇲🇦 • © 2026</p>', unsafe_allow_html=True)
+# 🌐 خانة معلومات المؤسسة الاحترافية السفلية (Footer) المشتركة في جميع الصفحات
+st.markdown("""
+    <div class="footer-panel">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>🎯 أهدافنا / Our Vision</h4>
+                <p>تسخير تقنيات الذكاء الاصطناعي المتقدمة لخدمة البشرية وتسهيل الولوج إلى المعلومة القانونية الصارمة، ودعم ريادة الأعمال والابتكار القانوني الرقمي بما يتماشى مع المعايير الدولية المعاصرة.</p>
+            </div>
+            <div class="footer-col">
+                <h4>📍 العنوان الاجتماعي / Headquarters</h4>
+                <p>📍 رقم 11، زنقة العلويين، الحي الإداري، طانطان، المملكة المغربية.<br>
+                📧 Contact: support@lawmind.ai</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            LawMind | AI Legal Intelligence • Powered by Moroccan Innovation 🇲🇦 • © 2026
+        </div>
+    </div>
+""", unsafe_allow_html=True)
